@@ -19,7 +19,7 @@ context.configure({ device, format });
 
 // fetch and compile shaders
 const code = await fetch('Shaders/shader.wgsl').then(response => response.text());
-const shader_module = device.createShaderModule({ code });
+const shaderModule = device.createShaderModule({ code });
 
 // create vertex buffer
 const vertices = new Float32Array([
@@ -35,12 +35,12 @@ const vertices = new Float32Array([
 ]);
 
 
-const vertex_buffer = device.createBuffer({
+const vertexBuffer = device.createBuffer({
     size: vertices.byteLength,
     usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
 });
 
-device.queue.writeBuffer(vertex_buffer, 0, vertices)
+device.queue.writeBuffer(vertexBuffer, 0, vertices)
 
 // create index buffer
 const indices = new Uint32Array([
@@ -52,15 +52,15 @@ const indices = new Uint32Array([
     1, 0, 5,    5, 0, 4,
 ]);
 
-const index_buffer = device.createBuffer({
+const indexBuffer = device.createBuffer({
     size: indices.byteLength,
     usage: GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST,
 });
 
-device.queue.writeBuffer(index_buffer, 0, indices)
+device.queue.writeBuffer(indexBuffer, 0, indices)
 
 // create vertex buffer layout
-const vertex_buffer_layout = {
+const vertexBufferLayout = {
     arrayStride: 8 * 4,
     attributes: [
         {
@@ -77,7 +77,7 @@ const vertex_buffer_layout = {
 };
 
 // depth buffer
-const depth_texture = device.createTexture({
+const depthTexture = device.createTexture({
     size: [canvas.width, canvas.height],
     format: 'depth24plus',
     usage: GPUTextureUsage.RENDER_ATTACHMENT,
@@ -88,12 +88,12 @@ const depth_texture = device.createTexture({
 // format of the data!
 const pipeline = device.createRenderPipeline({
     vertex: {
-        module: shader_module,
+        module: shaderModule,
         entryPoint: 'vertex',
-        buffers: [vertex_buffer_layout],
+        buffers: [vertexBufferLayout],
     },
     fragment: {
-        module: shader_module,
+        module: shaderModule,
         entryPoint: 'fragment',
         targets: [{format}],
     },
@@ -106,18 +106,18 @@ const pipeline = device.createRenderPipeline({
 });
 
 // create uniform buffer - after pipeline creation because we need to know the layout
-const uniform_buffer = device.createBuffer({
+const uniformBuffer = device.createBuffer({
     size: 4 * 4 * 4,
     usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
 });
 
 // create bind group
-const bind_group = device.createBindGroup({
+const bindGroup = device.createBindGroup({
     layout: pipeline.getBindGroupLayout(0),
     entries: [
         {
             binding: 0,
-            resource: {buffer: uniform_buffer},
+            resource: {buffer: uniformBuffer},
         },
     ],
 });
@@ -147,8 +147,6 @@ const scene = new Node();
 scene.addChild(model);
 scene.addChild(camera);
 
-
-
 function update() {
     const time = performance.now() / 1000;
 
@@ -164,18 +162,18 @@ function render() {
     const encoder = device.createCommandEncoder();
     
     // buffer transform matrix
-    const model_matrix = getGlobalModelMatrix(model);
-    const view_matrix = getGlobalViewMatrix(camera);
-    const projection_matrix = getProjectionMatrix(camera);
+    const modelMatrix = getGlobalModelMatrix(model);
+    const viewMatrix = getGlobalViewMatrix(camera);
+    const projectionMatrix = getProjectionMatrix(camera);
     
-    let result_matrix = mat4.create();
-    mat4.multiply(result_matrix, view_matrix, model_matrix);
-    mat4.multiply(result_matrix, projection_matrix, result_matrix);
+    let resultMatrix = mat4.create();
+    mat4.multiply(resultMatrix, viewMatrix, modelMatrix);
+    mat4.multiply(resultMatrix, projectionMatrix, resultMatrix);
     // write the data into the uniform buffer
-    device.queue.writeBuffer(uniform_buffer, 0, result_matrix);
+    device.queue.writeBuffer(uniformBuffer, 0, resultMatrix);
 
     // we set the data in the render pass!
-    const render_pass = encoder.beginRenderPass({
+    const renderPass = encoder.beginRenderPass({
         colorAttachments: [
             {
                 view: context.getCurrentTexture().createView(),
@@ -185,19 +183,19 @@ function render() {
             }
         ],
         depthStencilAttachment: {
-            view: depth_texture.createView(),
+            view: depthTexture.createView(),
             depthClearValue: 1.0,
             depthLoadOp: 'clear',
             depthStoreOp: 'discard',
         },
     });
     
-    render_pass.setPipeline(pipeline);
-    render_pass.setVertexBuffer(0, vertex_buffer);
-    render_pass.setIndexBuffer(index_buffer, 'uint32');
-    render_pass.setBindGroup(0, bind_group);
-    render_pass.drawIndexed(36);
-    render_pass.end();
+    renderPass.setPipeline(pipeline);
+    renderPass.setVertexBuffer(0, vertexBuffer);
+    renderPass.setIndexBuffer(indexBuffer, 'uint32');
+    renderPass.setBindGroup(0, bindGroup);
+    renderPass.drawIndexed(36);
+    renderPass.end();
 
     device.queue.submit([encoder.finish()]);
 }    
