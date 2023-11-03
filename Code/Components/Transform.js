@@ -1,14 +1,16 @@
-import { mat4 } from '../../Libraries/gl-matrix-module.js';
+import { mat4, vec3 } from '../../Libraries/gl-matrix-module.js';
 
 export class Transform {
-    constructor({rotation = [0, 0, 0, 1], translation = [0, 0, 0], scale = [1, 1, 1]} = {}) {
+    constructor({position = vec3.create(), rotation = vec3.create(), scale = vec3.create()} = {}) {
         this.rotation = rotation;
         this.translation = translation;
         this.scale = scale;
     } 
 
     get matrix() {
+        const rotation = rotation.create();
+        rotation.fromEuler(rotation, this.rotation[0], this.rotation[1], this.rotation[2]);
         return mat4.fromRotationTranslationScale(mat4.create(),
-            this.rotation, this.translation, this.scale);
+            rotation, this.translation, this.scale);
     }
 }
