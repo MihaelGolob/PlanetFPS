@@ -1,13 +1,11 @@
 // libraries
-import { quat, mat4 } from '../Libraries/gl-matrix-module.js';
-import { Transform } from './Components/Transform.js';
-import { Camera } from './Components/Camera.js';
-import { Node } from './Node.js';
+import { mat4 } from '../Libraries/gl-matrix-module.js';
 import {
     getGlobalModelMatrix,
     getGlobalViewMatrix,
     getProjectionMatrix,
 } from './Utility/./SceneUtils.js';
+import { Scene } from './Scene.js';
 
 // WebGPU initialization
 const adapter = await navigator.gpu.requestAdapter();
@@ -122,39 +120,11 @@ const bindGroup = device.createBindGroup({
     ],
 });
 
-// SCENE SETUP
-const model = new Node();
-model.addComponent(new Transform());
-model.addComponent({
-    update() {
-        const time = performance.now() / 1000;
-        const transform = model.getComponentOfType(Transform);
-        const rotation = transform.rotation;
-
-        quat.identity(rotation);
-        quat.rotateX(rotation, rotation, time * 0.6);
-        quat.rotateY(rotation, rotation, time * 0.7);
-    }
-});
-
-const camera = new Node();
-camera.addComponent(new Camera());
-camera.addComponent(new Transform({
-    translation: [0, 0, 5],
-}));
-
-const scene = new Node();
-scene.addChild(model);
-scene.addChild(camera);
+// create scene
+const scene = new Scene();
 
 function update() {
-    const time = performance.now() / 1000;
-
-    scene.traverse(node => {
-        for (const component of node.components) {
-            component.update?.(time);
-        }
-    });
+    scene.update();
 }
 
 function render() {
@@ -162,6 +132,8 @@ function render() {
     const encoder = device.createCommandEncoder();
     
     // buffer transform matrix
+    const model = scene.rotatingCube;
+    const camera = scene.camera;
     const modelMatrix = getGlobalModelMatrix(model);
     const viewMatrix = getGlobalViewMatrix(camera);
     const projectionMatrix = getProjectionMatrix(camera);
