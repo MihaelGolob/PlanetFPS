@@ -39,7 +39,7 @@ device.queue.writeBuffer(indexBuffer, 0, indices)
 
 // create vertex buffer layout
 const vertexBufferLayout = {
-    arrayStride: 2 * 4 * 4, // 4 positions, 4 colors, 4 bytes per float
+    arrayStride: 3 * 4 * 4, // 4-positions, 4-colors, 4-normals, 4 bytes per float
     attributes: [
         {
             shaderLocation: 0,
@@ -47,10 +47,15 @@ const vertexBufferLayout = {
             format: 'float32x4'
         },
         {
-            shaderLocation: 1,
+            shaderLocation: 2,
             offset: 4 * 4,
             format: 'float32x4'
-        }
+        },
+        {
+            shaderLocation: 1,
+            offset: 8 * 4,
+            format: 'float32x4'
+        },
     ],
 };
 
