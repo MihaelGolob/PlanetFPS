@@ -19,7 +19,9 @@ export class Scene {
 
         // cube
         let rotatingCube = new Node();
-        rotatingCube.addComponent(new Transform());
+        let rotatingCube2 = new Node();
+        rotatingCube.addComponent(new Transform({scale: [0.5, 0.5, 0.5], position: [-1, 0, 0]}));
+        rotatingCube2.addComponent(new Transform({scale: [0.5, 0.5, 0.7], position: [1, 1.5, 0]}));
         const vertices = [
             // positions    // index
             vec4.fromValues(-1, -1, -1, 1), //   0
@@ -64,7 +66,21 @@ export class Scene {
             }
         });
 
+        rotatingCube2.addComponent(new Renderer({
+            vertexPositions: vertices,
+            vertexColors: colors,
+            indices: indices,
+        }));
+        rotatingCube2.addComponent({
+            update(deltaTime) {
+                const transform = rotatingCube2.getComponentOfType(Transform);
+                transform.rotation[2] += 30 * deltaTime;
+                transform.rotation[1] += deltaTime;
+            }
+        });
+
         this.scene.addChild(rotatingCube);
+        this.scene.addChild(rotatingCube2);
     }
 
     get bufferArray() {
