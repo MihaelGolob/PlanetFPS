@@ -19,19 +19,11 @@ context.configure({ device, format });
 const code = await fetch('Shaders/shader.wgsl').then(response => response.text());
 const shaderModule = device.createShaderModule({ code });
 
-// create vertex buffer
-const vertices = new Float32Array([
-    // positions         // colors         // index
-    -1, -1, -1,  1,      0,  0,  0,  1,    //   0
-    -1, -1,  1,  1,      0,  0,  1,  1,    //   1
-    -1,  1, -1,  1,      0,  1,  0,  1,    //   2
-    -1,  1,  1,  1,      0,  1,  1,  1,    //   3
-     1, -1, -1,  1,      1,  0,  0,  1,    //   4
-     1, -1,  1,  1,      1,  0,  1,  1,    //   5
-     1,  1, -1,  1,      1,  1,  0,  1,    //   6
-     1,  1,  1,  1,      1,  1,  1,  1,    //   7
-]);
+// create the scene
+const scene = new Scene();
 
+// create vertex buffer
+const vertices = scene.vertexBufferArray;
 
 const vertexBuffer = device.createBuffer({
     size: vertices.byteLength,
@@ -41,14 +33,7 @@ const vertexBuffer = device.createBuffer({
 device.queue.writeBuffer(vertexBuffer, 0, vertices)
 
 // create index buffer
-const indices = new Uint32Array([
-    0, 1, 2,    2, 1, 3,
-    4, 0, 6,    6, 0, 2,
-    5, 4, 7,    7, 4, 6,
-    1, 5, 3,    3, 5, 7,
-    6, 2, 7,    7, 2, 3,
-    1, 0, 5,    5, 0, 4,
-]);
+const indices = scene.indexBufferArray;
 
 const indexBuffer = device.createBuffer({
     size: indices.byteLength,
@@ -59,7 +44,7 @@ device.queue.writeBuffer(indexBuffer, 0, indices)
 
 // create vertex buffer layout
 const vertexBufferLayout = {
-    arrayStride: 8 * 4,
+    arrayStride: 4 * 4 * 4, // 4 positions, 4 colors, 4 bytes per float
     attributes: [
         {
             shaderLocation: 0,
@@ -105,7 +90,7 @@ const pipeline = device.createRenderPipeline({
 
 // create uniform buffer - after pipeline creation because we need to know the layout
 const uniformBuffer = device.createBuffer({
-    size: 4 * 4 * 4,
+    size: 4 * 4 * 4, // 4x4 matrix, 4 bytes per float
     usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
 });
 
@@ -120,9 +105,6 @@ const bindGroup = device.createBindGroup({
     ],
 });
 
-// create scene
-const scene = new Scene();
-
 function update() {
     scene.update();
 }
@@ -132,15 +114,12 @@ function render() {
     const encoder = device.createCommandEncoder();
     
     // buffer transform matrix
-    const model = scene.rotatingCube;
     const camera = scene.camera;
-    const modelMatrix = getGlobalModelMatrix(model);
     const viewMatrix = getGlobalViewMatrix(camera);
     const projectionMatrix = getProjectionMatrix(camera);
     
     let resultMatrix = mat4.create();
-    mat4.multiply(resultMatrix, viewMatrix, modelMatrix);
-    mat4.multiply(resultMatrix, projectionMatrix, resultMatrix);
+    mat4.multiply(resultMatrix, projectionMatrix, viewMatrix);
     // write the data into the uniform buffer
     device.queue.writeBuffer(uniformBuffer, 0, resultMatrix);
 
@@ -166,7 +145,7 @@ function render() {
     renderPass.setVertexBuffer(0, vertexBuffer);
     renderPass.setIndexBuffer(indexBuffer, 'uint32');
     renderPass.setBindGroup(0, bindGroup);
-    renderPass.drawIndexed(36);
+    renderPass.drawIndexed(scene.indexCount);
     renderPass.end();
 
     device.queue.submit([encoder.finish()]);
