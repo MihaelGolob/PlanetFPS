@@ -5,15 +5,13 @@ export class Renderer {
         // vertex colors should be of type vec4 (same length as vertex positions)
         this.vertexColors = vertexColors;
         this.indices = indices;
-
-        this.vertices = this.#getVerticesAndColors();
     }
 
-    #getVerticesAndColors() {
+    getVerticesAndColors(positions, colors) {
         let buffer = [];
         for (let i = 0; i < this.vertexPositions.length; i++) {
-            buffer.push.apply(buffer, [this.vertexPositions[i][0], this.vertexPositions[i][1], this.vertexPositions[i][2], this.vertexPositions[i][3]]);
-            buffer.push.apply(buffer, [this.vertexColors[i][0], this.vertexColors[i][1], this.vertexColors[i][2], this.vertexColors[i][3]]);
+            buffer.push.apply(buffer, [positions[i][0], positions[i][1], positions[i][2], positions[i][3]]);
+            buffer.push.apply(buffer, [colors[i][0], colors[i][1], colors[i][2], colors[i][3]]);
         }
 
         return buffer;

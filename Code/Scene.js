@@ -18,8 +18,8 @@ export class Scene {
         this.scene.addChild(this.camera);
 
         // cube
-        this.rotatingCube = new Node();
-        this.rotatingCube.addComponent(new Transform());
+        let rotatingCube = new Node();
+        rotatingCube.addComponent(new Transform());
         const vertices = [
             // positions    // index
             vec4.fromValues(-1, -1, -1, 1), //   0
@@ -51,29 +51,23 @@ export class Scene {
             6, 2, 7,    7, 2, 3,
             1, 0, 5,    5, 0, 4,
         ]);
-        this.rotatingCube.addComponent(new Renderer({
+        rotatingCube.addComponent(new Renderer({
             vertexPositions: vertices,
             vertexColors: colors,
             indices: indices,
         }));
-        this.rotatingCube.addComponent({
-            update() {
-                // const time = performance.now() / 1000;
-                // const transform = this.rotatingCube.getComponentOfType(Transform);
-                // const rotation = transform.rotation;
-
-                // quat.identity(rotation);
-                // quat.rotateX(rotation, rotation, time * 0.6);
-                // quat.rotateY(rotation, rotation, time * 0.7);
+        rotatingCube.addComponent({
+            update(deltaTime) {
+                const transform = rotatingCube.getComponentOfType(Transform);
+                transform.rotation[0] += 10 * deltaTime;
+                transform.rotation[1] += 10 * deltaTime;
             }
         });
 
-        this.scene.addChild(this.rotatingCube);
-
-        this.createBufferArrays();
+        this.scene.addChild(rotatingCube);
     }
 
-    createBufferArrays() {
+    get bufferArray() {
         let vertexArray = [];
         let indexArray = [];
         this.indexCount = 0;
@@ -82,7 +76,22 @@ export class Scene {
         this.scene.traverse(node => {
             const renderer = node.getComponentOfType(Renderer);
             if (renderer) {
-                vertexArray.push.apply(vertexArray, renderer.vertices);
+                const transform = node.getComponentOfType(Transform);
+                let vertexPositions = [];
+
+                // TODO: refactor and make this more efficient!
+                for (let i = 0; i < renderer.vertexPositions.length; i++) {
+                    vertexPositions.push(vec4.clone(renderer.vertexPositions[i]));
+                }
+
+                if (transform) {
+                    const matrix = transform.matrix;
+                    for (let i = 0; i < vertexPositions.length; i++) {
+                        vec4.transformMat4(vertexPositions[i], vertexPositions[i], matrix);
+                    }
+                }
+
+                vertexArray.push.apply(vertexArray, renderer.getVerticesAndColors(vertexPositions, renderer.vertexColors));
 
                 let indices = renderer.indices;
                 for (let i = 0; i < indices.length; i++) {
@@ -95,16 +104,13 @@ export class Scene {
             }
         });
 
-        this.indexBufferArray = Uint32Array.from(indexArray);
-        this.vertexBufferArray = Float32Array.from(vertexArray);
+        return [Uint32Array.from(indexArray), Float32Array.from(vertexArray)]
     }
 
-    update() {
-        const time = performance.now() / 1000;
-
+    update(deltaTime) {
         this.scene.traverse(node => {
             for (const component of node.components) {
-                component.update?.(time);
+                component.update?.(deltaTime);
             }
         });
     }

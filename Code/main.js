@@ -20,10 +20,8 @@ const code = await fetch('Shaders/shader.wgsl').then(response => response.text()
 const shaderModule = device.createShaderModule({ code });
 
 // create the scene
-const scene = new Scene();
-
-// create vertex buffer
-const vertices = scene.vertexBufferArray;
+const scene = new Scene(); 
+let [indices, vertices] = scene.bufferArray;
 
 const vertexBuffer = device.createBuffer({
     size: vertices.byteLength,
@@ -31,9 +29,6 @@ const vertexBuffer = device.createBuffer({
 });
 
 device.queue.writeBuffer(vertexBuffer, 0, vertices)
-
-// create index buffer
-const indices = scene.indexBufferArray;
 
 const indexBuffer = device.createBuffer({
     size: indices.byteLength,
@@ -105,8 +100,14 @@ const bindGroup = device.createBindGroup({
     ],
 });
 
+let lastTime = Date.now();
+
 function update() {
-    scene.update();
+    let now = Date.now();
+    let deltaTime = (now - lastTime) / 1000;
+    lastTime = now;
+
+    scene.update(deltaTime);
 }
 
 function render() {
@@ -122,6 +123,10 @@ function render() {
     mat4.multiply(resultMatrix, projectionMatrix, viewMatrix);
     // write the data into the uniform buffer
     device.queue.writeBuffer(uniformBuffer, 0, resultMatrix);
+
+    // update the vertex buffer
+    let [_, vertices] = scene.bufferArray;
+    device.queue.writeBuffer(vertexBuffer, 0, vertices)
 
     // we set the data in the render pass!
     const renderPass = encoder.beginRenderPass({
