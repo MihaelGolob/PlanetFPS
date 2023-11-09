@@ -148,7 +148,7 @@ function render() {
             {
                 view: context.getCurrentTexture().createView(),
                 loadOp: 'clear', // this can be either 'clear' or 'load'
-                clearValue: [0.7, 0.8, 0.9, 1], // RGBA color
+                clearValue: [0.5, 0.6, 0.7, 1], // RGBA color
                 storeOp: 'store' // this can be either 'store' or 'discard'
             }
         ],

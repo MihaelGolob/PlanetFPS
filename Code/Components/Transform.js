@@ -13,4 +13,8 @@ export class Transform {
         return mat4.fromRotationTranslationScale(mat4.create(),
             rotation, this.position, this.scale);
     }
+
+    translate(translate = vec3.create()) {
+        vec3.add(this.position, this.position, translate);
+    }
 }

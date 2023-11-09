@@ -13,10 +13,9 @@ export class Scene {
         // scene supports only one camera for now
         this.camera = new Node();
         this.camera.addComponent(new Camera());
-        this.camera.addComponent(new Transform({
-            position: [0, 0, 5],
-        }));
-        this.camera.addComponent(new FPSController(this.camera.transform))
+        let cameraTransform = new Transform({ position: [0, 0, 5], });
+        this.camera.addComponent(cameraTransform);
+        this.camera.addComponent(new FPSController(cameraTransform))
         this.scene.addChild(this.camera);
 
         // scene supports only one light for now
