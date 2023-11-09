@@ -90,7 +90,7 @@ const pipeline = device.createRenderPipeline({
 
 // create uniform buffer - after pipeline creation because we need to know the layout
 const uniformBuffer = device.createBuffer({
-    size: 4 * 4 * 4, // 4x4 matrix, 4 bytes per float
+    size: 2 * 4 * 4 * 4, // 4x4 matrix, 4 bytes per float
     usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
 });
 
@@ -100,6 +100,10 @@ const bindGroup = device.createBindGroup({
     entries: [
         {
             binding: 0,
+            resource: {buffer: uniformBuffer},
+        },
+        {
+            binding: 1,
             resource: {buffer: uniformBuffer},
         },
     ],
@@ -126,8 +130,13 @@ function render() {
     
     let resultMatrix = mat4.create();
     mat4.multiply(resultMatrix, projectionMatrix, viewMatrix);
+
+    let normalMatrix = mat4.create();
+    mat4.invert(normalMatrix, resultMatrix);
+    mat4.transpose(normalMatrix, normalMatrix);
     // write the data into the uniform buffer
     device.queue.writeBuffer(uniformBuffer, 0, resultMatrix);
+    device.queue.writeBuffer(uniformBuffer, 4 * 4 * 4, normalMatrix)
 
     // update the vertex buffer
     let [_, vertices] = scene.bufferArray;

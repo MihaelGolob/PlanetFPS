@@ -63,37 +63,37 @@ export class Scene {
         ];
 
         const normals = [
-            vec4.fromValues(-1, 0, 0, 0),
-            vec4.fromValues(0, 0, -1, 0),
-            vec4.fromValues(0, -1, 0, 0),
+            vec4.fromValues(-1, 0, 0, 0), // 0
+            vec4.fromValues(0, -1, 0, 0), // 1 
+            vec4.fromValues(0, 0, -1, 0), // 2
 
-            vec4.fromValues(-1, 0, 0, 0),
-            vec4.fromValues(0, 0, -1, 0),
-            vec4.fromValues(0, 0, 1, 0),
+            vec4.fromValues(-1, 0, 0, 0), // 3 
+            vec4.fromValues(0, -1, 0, 0), // 4
+            vec4.fromValues(0, 0, 1, 0), // 5
 
-            vec4.fromValues(-1, 0, 0, 0),
-            vec4.fromValues(0, -1, 0, 0),
-            vec4.fromValues(1, 0, 0, 0),
+            vec4.fromValues(-1, 0, 0, 0), // 6
+            vec4.fromValues(0, 0, -1, 0), // 7 
+            vec4.fromValues(0, 1, 0, 0), // 8
 
-            vec4.fromValues(-1, 0, 0, 0),
-            vec4.fromValues(0, 0, 1, 0),
-            vec4.fromValues(1, 0, 0, 0),
+            vec4.fromValues(-1, 0, 0, 0), // 9
+            vec4.fromValues(0, 0, 1, 0), // 10
+            vec4.fromValues(0, 1, 0, 0), // 11
 
-            vec4.fromValues(0, 0, -1, 0),
-            vec4.fromValues(0, -1, 0, 0),
-            vec4.fromValues(0, 1, 0, 0),
+            vec4.fromValues(0, -1, 0, 0), // 12
+            vec4.fromValues(0, 0, -1, 0), // 13
+            vec4.fromValues(1, 0, 0, 0), // 14
 
-            vec4.fromValues(0, 0, -1, 0),
-            vec4.fromValues(0, 0, 1, 0),
-            vec4.fromValues(0, 1, 0, 0),
+            vec4.fromValues(0, -1, 0, 0), // 15
+            vec4.fromValues(0, 0, 1, 0), // 16
+            vec4.fromValues(1, 0, 0, 0), // 17
 
-            vec4.fromValues(0, -1, 0, 0),
-            vec4.fromValues(1, 0, 0, 0),
-            vec4.fromValues(0, 1, 0, 0),
+            vec4.fromValues(0, 0, -1, 0), // 18
+            vec4.fromValues(0, 1, 0, 0), // 19
+            vec4.fromValues(1, 0, 0, 0), // 20
 
-            vec4.fromValues(0, 0, 1, 0),
-            vec4.fromValues(1, 0, 0, 0),
-            vec4.fromValues(0, 1, 0, 0),
+            vec4.fromValues(0, 0, 1, 0), // 21
+            vec4.fromValues(0, 1, 0, 0), // 22
+            vec4.fromValues(1, 0, 0, 0), // 23
         ];
 
         const colors = [
@@ -132,11 +132,11 @@ export class Scene {
 
         const indices = new Uint32Array([
             0, 3, 6,    6, 3, 9, // left
-            1, 4, 12,   12, 15, 4, // back
-            2, 7, 13,   13, 18, 7, // bottom
+            1, 4, 12,   12, 15, 4, // bottom 
+            2, 7, 13,   13, 18, 7, // back 
             5, 16, 10,   10, 21, 16, // front
-            8, 11, 19,   19, 22, 11, // right
-            14, 17, 20,  20, 23, 17, // top
+            8, 11, 19,   19, 22, 11, // top 
+            14, 17, 20,  20, 23, 17, // right 
         ]);
         rotatingCube.addComponent(new Renderer({
             vertexPositions: vertices,
@@ -155,7 +155,7 @@ export class Scene {
         this.scene.addChild(rotatingCube);
 
         let rotatingCube2 = new Node();
-        rotatingCube2.addComponent(new Transform({scale: [0.5, 0.5, 0.7], position: [1, 1.5, 0]}));
+        rotatingCube2.addComponent(new Transform({scale: [0.5, 0.5, 0.7], position: [1, 1.5, -0.5]}));
 
         rotatingCube2.addComponent(new Renderer({
             vertexPositions: vertices,
