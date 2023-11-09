@@ -34,7 +34,7 @@ fn vertex(input: VertexInput) -> VertexOutput {
     // light calculation
     let ambientColor = vec3f(0.2, 0.2, 0.2);
     let directionalLightColor = vec3f(1, 1, 1);
-    let lightSource = matrix * vec4f(0, -1, 2, 1.0);
+    let lightSource = matrix * vec4f(0, 0, 2, 1.0);
     let directionalVector = normalize(lightSource.xyz - output.position.xyz);
 
     let transformedNormal = normalMatrix * input.normal;

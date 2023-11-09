@@ -3,6 +3,7 @@ import { Node } from "./Node.js";
 import { Transform } from "./Components/Transform.js";
 import { Camera } from './Components/Camera.js'
 import { Renderer } from "./Components/Renderer.js";
+import { FPSController } from "./Components/FPS/FPSController.js";
 
 export class Scene {
     constructor() {
@@ -15,6 +16,7 @@ export class Scene {
         this.camera.addComponent(new Transform({
             position: [0, 0, 5],
         }));
+        this.camera.addComponent(new FPSController(this.camera.transform))
         this.scene.addChild(this.camera);
 
         // scene supports only one light for now
