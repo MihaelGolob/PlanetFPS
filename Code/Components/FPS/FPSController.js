@@ -17,12 +17,12 @@ export class FPSController{
 
     initInputHandler() {
         this.keysDictionary = {};
-        this.keysToTrack = [65, 87, 68, 83];
+        this.keysToTrack = ['w', 'a', 's', 'd'];
         this.setupKeysDictionary();
 
         document.addEventListener('keydown', (event) => {
             this.keysToTrack.forEach((key, index) => {
-                if (key == event.keyCode) {
+                if (key == event.key) {
                     // track key down
                     this.keysDictionary[key] = 1;
                 }
@@ -31,7 +31,7 @@ export class FPSController{
 
         document.addEventListener('keyup', (event) => {
             this.keysToTrack.forEach((key, index) => {
-                if (key == event.keyCode) {
+                if (key == event.key) {
                     // track key down
                     this.keysDictionary[key] = 0;
                 }
@@ -53,7 +53,11 @@ export class FPSController{
     move(deltaTime) {
         let moveDirection = vec3.create();
 
-        if (this.keysDictionary[65] == 1) { // move left
+        if (this.keysDictionary['w'] == 1) { // move forward
+            vec3.add(moveDirection, moveDirection, this.viewDirection);
+        }
+
+        if (this.keysDictionary['a'] == 1) { // move left
             let leftDirection = vec3.create();
             vec3.cross(leftDirection, this.upDirection, this.viewDirection);
             vec3.normalize(leftDirection, leftDirection);
@@ -61,23 +65,19 @@ export class FPSController{
             vec3.add(moveDirection, moveDirection, leftDirection);
         }
 
-        if (this.keysDictionary[87] == 1) { // move forward
-            vec3.add(moveDirection, moveDirection, this.viewDirection);
+        if (this.keysDictionary['s'] == 1) { // move backward
+            let backwardDirection = vec3.create();
+            vec3.scale(backwardDirection, this.viewDirection, -1);
+            
+            vec3.add(moveDirection, moveDirection, backwardDirection);
         }
-
-        if (this.keysDictionary[68] == 1) { // move right
+        
+        if (this.keysDictionary['d'] == 1) { // move right
             let rightDirection = vec3.create();
             vec3.cross(rightDirection, this.viewDirection, this.upDirection);
             vec3.normalize(rightDirection, rightDirection);
 
             vec3.add(moveDirection, moveDirection, rightDirection);
-        }
-
-        if (this.keysDictionary[83] == 1) { // move backward
-            let backwardDirection = vec3.create();
-            vec3.scale(backwardDirection, this.viewDirection, -1);
-
-            vec3.add(moveDirection, moveDirection, backwardDirection);
         }
 
         vec3.normalize(moveDirection, moveDirection);
