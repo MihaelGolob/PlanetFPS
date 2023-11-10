@@ -14,7 +14,18 @@ export class Transform {
             rotation, this.position, this.scale);
     }
 
+    get viewDirection() {
+        const rotation = quat.create();
+        quat.fromEuler(rotation, this.rotation[0], this.rotation[1], this.rotation[2]);
+        const viewDirection = vec3.fromValues(0, 0, -1);
+        return vec3.transformQuat(viewDirection, viewDirection, rotation);
+    }
+
     translate(translate = vec3.create()) {
         vec3.add(this.position, this.position, translate);
+    }
+
+    rotate(rotation = vec3.create()) {
+        vec3.add(this.rotation, this.rotation, rotation);
     }
 }

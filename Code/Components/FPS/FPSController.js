@@ -8,7 +8,8 @@ export class FPSController{
         this.initInputHandler();
 
         // movement parameter initialization
-        this.movementSpeed = 10;
+        this.movementSpeed = 8;
+        this.rotationSpeed = 8;
 
         // movement direction initialization
         this.viewDirection = vec3.fromValues(0, 0, -1)
@@ -20,8 +21,11 @@ export class FPSController{
         this.keysToTrack = ['w', 'a', 's', 'd'];
         this.setupKeysDictionary();
 
+        this.mouseDeltaX = 0;
+        this.mouseDeltaY = 0;
+
         document.addEventListener('keydown', (event) => {
-            this.keysToTrack.forEach((key, index) => {
+            this.keysToTrack.forEach((key, _) => {
                 if (key == event.key) {
                     // track key down
                     this.keysDictionary[key] = 1;
@@ -30,7 +34,7 @@ export class FPSController{
         });
 
         document.addEventListener('keyup', (event) => {
-            this.keysToTrack.forEach((key, index) => {
+            this.keysToTrack.forEach((key, _) => {
                 if (key == event.key) {
                     // track key down
                     this.keysDictionary[key] = 0;
@@ -38,9 +42,17 @@ export class FPSController{
             });
         });
 
-        document.addEventListener('mousemove', (event) => {
+        document.querySelector('canvas').addEventListener('mousemove', (event) => {
             this.mouseDeltaX = event.movementX;
             this.mouseDeltaY = event.movementY;
+
+            this.mouseMoving = true;
+        });
+
+        document.querySelector('canvas').addEventListener('click', async () => {
+            await document.querySelector('canvas').requestPointerLock({
+                unadjustedMovement: true,
+            });
         });
     }
 
@@ -52,14 +64,15 @@ export class FPSController{
 
     move(deltaTime) {
         let moveDirection = vec3.create();
+        let viewDirection = this.transform.viewDirection;
 
         if (this.keysDictionary['w'] == 1) { // move forward
-            vec3.add(moveDirection, moveDirection, this.viewDirection);
+            vec3.add(moveDirection, moveDirection, viewDirection);
         }
 
         if (this.keysDictionary['a'] == 1) { // move left
             let leftDirection = vec3.create();
-            vec3.cross(leftDirection, this.upDirection, this.viewDirection);
+            vec3.cross(leftDirection, this.upDirection, viewDirection);
             vec3.normalize(leftDirection, leftDirection);
 
             vec3.add(moveDirection, moveDirection, leftDirection);
@@ -67,14 +80,14 @@ export class FPSController{
 
         if (this.keysDictionary['s'] == 1) { // move backward
             let backwardDirection = vec3.create();
-            vec3.scale(backwardDirection, this.viewDirection, -1);
+            vec3.scale(backwardDirection, viewDirection, -1);
             
             vec3.add(moveDirection, moveDirection, backwardDirection);
         }
         
         if (this.keysDictionary['d'] == 1) { // move right
             let rightDirection = vec3.create();
-            vec3.cross(rightDirection, this.viewDirection, this.upDirection);
+            vec3.cross(rightDirection, viewDirection, this.upDirection);
             vec3.normalize(rightDirection, rightDirection);
 
             vec3.add(moveDirection, moveDirection, rightDirection);
@@ -86,7 +99,26 @@ export class FPSController{
         this.transform.translate(moveDirection);
     }
 
+    rotate(deltaTime) {
+        if (!this.mouseMoving) return;
+
+        let rotation = vec3.create();
+
+        let horizontalRotation = vec3.fromValues(0, -this.mouseDeltaX, 0);
+        let verticalRotation = vec3.fromValues(-this.mouseDeltaY, 0, 0);
+
+        vec3.add(rotation, rotation, horizontalRotation);
+        vec3.add(rotation, rotation, verticalRotation);
+
+        vec3.scale(rotation, rotation, this.rotationSpeed);
+        vec3.scale(rotation, rotation, deltaTime);
+        this.transform.rotate(rotation);
+    }
+
     update(deltaTime) {
         this.move(deltaTime);
+        this.rotate(deltaTime);
+
+        this.mouseMoving = false;
     }
 }
