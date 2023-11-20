@@ -4,6 +4,7 @@ import { Transform } from "./Components/Transform.js";
 import { Camera } from './Components/Camera.js'
 import { Renderer } from "./Components/Renderer.js";
 import { FPSController } from "./Components/FPS/FPSController.js";
+import { Planet } from "./PlanetGenerator.js";
 
 export class Scene {
     constructor() {
@@ -24,6 +25,29 @@ export class Scene {
             position: [0, 0, 5],
         }));
         this.scene.addChild(this.light);
+
+
+        // Planet
+        //////////////////////////////
+        const planet = new Planet(20);
+        planet.generatePlanet();
+
+        const planetNode = new Node();
+        planetNode.addComponent(new Transform({scale: [1, 1, 1], position: [0, 0, 0]}));
+
+        planetNode.addComponent(new Renderer({
+            vertexPositions: planet.vertices,
+            vertexColors: planet.colors,
+            indices: planet.indices,
+            normals: planet.normals,
+        }));
+
+        console.log(planet.normals);
+        console.log(planet.vertices);
+
+        this.scene.addChild(planetNode);
+
+        ///////////////////////////
 
         // cube
         let rotatingCube = new Node();
@@ -145,6 +169,7 @@ export class Scene {
             indices: indices,
             normals: normals,
         }));
+
         rotatingCube.addComponent({
             update(deltaTime) {
                 const transform = rotatingCube.getComponentOfType(Transform);
@@ -153,7 +178,7 @@ export class Scene {
             }
         });
 
-        this.scene.addChild(rotatingCube);
+        // this.scene.addChild(rotatingCube);
 
         let rotatingCube2 = new Node();
         rotatingCube2.addComponent(new Transform({scale: [0.5, 0.5, 0.7], position: [1, 1.5, -0.5]}));
@@ -172,7 +197,7 @@ export class Scene {
             }
         }); 
         
-        this.scene.addChild(rotatingCube2);
+        // this.scene.addChild(rotatingCube2);
     }
 
     get bufferArray() {
