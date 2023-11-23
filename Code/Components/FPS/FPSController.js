@@ -1,4 +1,4 @@
-import { vec3 } from '../../../Libraries/gl-matrix-module.js';
+import { vec3 } from '../../../lib/gl-matrix-module.js';
 
 export class FPSController{
     constructor(transform) {
@@ -8,8 +8,8 @@ export class FPSController{
         this.initInputHandler();
 
         // movement parameter initialization
-        this.movementSpeed = 8;
-        this.rotationSpeed = 8;
+        this.movementSpeed = 100;
+        this.rotationSpeed = 0.5;
 
         // movement direction initialization
         this.viewDirection = vec3.fromValues(0, 0, -1)
@@ -96,7 +96,7 @@ export class FPSController{
         vec3.normalize(moveDirection, moveDirection);
         vec3.scale(moveDirection, moveDirection, this.movementSpeed);
         vec3.scale(moveDirection, moveDirection, deltaTime);
-        this.transform.translate(moveDirection);
+        this.transform.translateWithDeg(moveDirection);
     }
 
     rotate(deltaTime) {
@@ -115,7 +115,7 @@ export class FPSController{
         this.transform.rotate(rotation);
     }
 
-    update(deltaTime) {
+    update(time, deltaTime) {
         this.move(deltaTime);
         this.rotate(deltaTime);
 
