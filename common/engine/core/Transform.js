@@ -1,4 +1,5 @@
 import { mat4, quat, vec3 } from '../../../lib/gl-matrix-module.js';
+import { getGlobalModelMatrix } from './SceneUtils.js';
 
 export class Transform {
 
@@ -32,18 +33,5 @@ export class Transform {
         quat.fromEuler(rotation, this.rotation[0], this.rotation[1], this.rotation[2]);
         const viewDirection = vec3.fromValues(0, 0, -1);
         return vec3.transformQuat(viewDirection, viewDirection, rotation);
-    }
-
-    translateWithDeg(translate = vec3.create()) {
-        let toRad = Math.PI / 180;
-        vec3.add(this.translation, this.translation, vec3.scale(translate, translate, toRad));
-    }
-
-    translateWithRad(translate = vec3.create()) {
-        vec3.add(this.translation, this.translation, translate);
-    }
-
-    rotate(rotation = vec3.create()) {
-        vec3.add(this.rotation, this.rotation, rotation);
     }
 }

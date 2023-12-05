@@ -3,7 +3,7 @@ import { UpdateSystem } from '../common/engine/systems/UpdateSystem.js';
 import { GLTFLoader } from '../common/engine/loaders/GLTFLoader.js';
 import { Renderer } from './Renderer.js';
 import { Light } from './Light.js';
-
+import { GoodFPSController } from './Components/FPS/GoodFPSController.js';
 import {
   Camera,
   Model,
@@ -11,46 +11,38 @@ import {
   Transform,
 } from '../common/engine/core.js';
 
-import { GoodFPSController } from './Components/FPS/GoodFPSController.js';
-
 const canvas = document.querySelector('canvas');
 
 // scene setup
-const glftLoader = new GLTFLoader();
-await glftLoader.load('./common/models/monkey.gltf');
+const gltfLoader = new GLTFLoader();
+await gltfLoader.load('./common/models/monkey.gltf');
+await gltfLoader.load('./Assets/ground.gltf');
 
-
-
-const scene = glftLoader.loadScene(glftLoader.defaultScene);
+const scene = gltfLoader.loadScene(gltfLoader.defaultScene);
 
 let FPSRoot = new Node();
-FPSRoot.addComponent(new Transform({ position: [0, 0, 10] }));
 scene.addChild(FPSRoot);
+let FPSRootTransform = new Transform({ translation: [0, 10, 0] });
+FPSRoot.addComponent(FPSRootTransform);
 
 let FPSBody = new Node();
 FPSRoot.addChild(FPSBody);
-FPSBody.addComponent(new Transform({ position: [0, 1, 10] }));
+let bodyTransform = new Transform({ translation: [0, 1, 0] })
+FPSBody.addComponent(bodyTransform);
 
-// scene supports only one camera for now
 let FPSCamera = new Node();
-FPSCamera.addComponent(new Camera());
-let cameraTransform = new Transform({ position: [0, 1.5, 10], });
-FPSCamera.addComponent(cameraTransform);
 FPSBody.addChild(FPSCamera);
+FPSCamera.addComponent(new Camera());
+let cameraTransform = new Transform({ translation: [0, 1.5, 0], });
+FPSCamera.addComponent(cameraTransform);
 
-
-FPSRoot.addComponent(new GoodFPSController(FPSRoot, FPSBody, cameraTransform));
-
-
-//let camera = scene.find(node => node.getComponentOfType(Camera));
-
-const model = scene.find(node => node.getComponentOfType(Model));
+FPSRoot.addComponent(new GoodFPSController(FPSRoot, FPSRootTransform, bodyTransform, cameraTransform));
 
 const light = new Node();
 light.addComponent(new Transform({
-  translation: [3, 3, 1],
+  translation: [3, 10, 1],
 }));
-light.addComponent(new Light({ ambient: 0.3, shininess: 10 }));
+light.addComponent(new Light({ ambient: 0.3, shininess: 3 }));
 
 scene.addChild(light);
 
