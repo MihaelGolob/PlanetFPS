@@ -55,7 +55,7 @@ export class Scene {
     let cameraTransform = new Transform({ translation: [0, 1.5, 0], });
     FPSCamera.addComponent(cameraTransform);
     
-    FPSRoot.addComponent(new GoodFPSController(FPSRoot, FPSRootTransform, bodyTransform, cameraTransform));
+    FPSRoot.addComponent(new GoodFPSController(FPSRoot, FPSRootTransform, bodyTransform, cameraTransform, this.scene));
 
     return [FPSRoot, FPSCamera];
   }

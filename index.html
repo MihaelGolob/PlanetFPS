@@ -31,10 +31,23 @@
                 font-family: monospace;
                 font-size: 20px;
             }
+
+            .crosshair {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+
+                color: white;
+                opacity: 0.5;
+                font-size: 50px;
+                font-family: monospace;
+            }
         </style>
     </head>
     <body>
         <canvas class="fullscreen"></canvas>
         <p class="fps">fps: <span id='stat-fps'>69</span></p>
+        <span class="crosshair">+</span>
     </body>
 </html>
