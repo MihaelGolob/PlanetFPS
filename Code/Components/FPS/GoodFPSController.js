@@ -176,6 +176,7 @@ export class GoodFPSController {
     if (this.leftMouseButtonPressed && Date.now() - this.lastShootTime >= this.shootCooldown) {
       this.lastShootTime = Date.now();
       let forward = vec4.transformMat4(vec4.create(), vec4.fromValues(0, 0, -1, 0), this.globalMatrix);
+      vec4.transformQuat(forward, forward, this.camera.rotation)
       let forwardVector = this.toVec3(forward);
       let start = vec4.add(vec4.create(), this.globalBodyPos, vec4.fromValues(0, 2, 0, 0))
       const bullet = new Bullet(this.bulletParent, start, this.bulletSpeed, forwardVector, 0, 7);
