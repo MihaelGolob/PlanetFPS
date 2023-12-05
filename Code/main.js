@@ -61,10 +61,9 @@ function render() {
   renderer.render(scene, FPSCamera);
 }
 
-//function resize({ displaySize: { width, height } }) {
-//camera.getComponentOfType(Camera).aspect = width / height;
-//}
+function resize({ displaySize: { width, height } }) {
+  FPSCamera.getComponentOfType(Camera).aspect = width / height;
+}
 
-//new ResizeSystem({ canvas, resize }).start();
-//
+new ResizeSystem({ canvas, resize }).start();
 new UpdateSystem({ update, render }).start();

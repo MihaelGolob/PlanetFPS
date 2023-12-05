@@ -78,23 +78,24 @@ export class GoodFPSController {
   }
 
   updateRotation() {
-    	if(!this.mouseMoving)
-        return;
+    if(!this.mouseMoving)
+      return;
 
     const min = -85;
     const max = 75;
 
     const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
     this.angleX += this.dy;
+    this.angleX = clamp(this.angleX, min, max);
   
-  // y axis
-  quat.fromEuler(this.cam.rotation, -this.angleX, 0, 0);
-  
-  // x axis
-  let rot = quat.create();
-  quat.fromEuler(rot, 0, -this.dx, 0);
-  quat.mul(this.body.rotation, rot, this.body.rotation);
-}
+    // y axis
+    quat.fromEuler(this.cam.rotation, -this.angleX, 0, 0);
+    
+    // x axis
+    let rot = quat.create();
+    quat.fromEuler(rot, 0, -this.dx, 0);
+    quat.mul(this.body.rotation, rot, this.body.rotation);
+  }
 
 updateMovement(dt) {
   let moveDir = vec4.fromValues(this.keysDictionary['KeyD'] - this.keysDictionary['KeyA'], 0, this.keysDictionary['KeyS'] - this.keysDictionary['KeyW'], 0);
