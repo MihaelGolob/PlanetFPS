@@ -11,6 +11,9 @@ import {
   Transform,
 } from '../common/engine/core.js';
 
+// global variables
+let oldTime = Date.now();
+
 const canvas = document.querySelector('canvas');
 
 // scene setup
@@ -55,6 +58,17 @@ function update(time, dt) {
       component.update?.(time, dt);
     }
   });
+
+  updateStats();
+}
+
+function updateStats() {
+  let now = Date.now();
+  let delta = now - oldTime;
+  let fps = (1000 / delta).toFixed(1);
+  oldTime = Date.now();
+
+  document.getElementById('stat-fps').innerHTML = fps;
 }
 
 function render() {
