@@ -42,7 +42,7 @@ export class GoodFPSController {
     this.dy = 0;
     this.angleX = 0;
 
-    this.globalMatrix = mat4.create();
+    this.globalBodyMatrix = mat4.create();
     this.globalBodyPos = vec3.create();
   }
 
@@ -136,17 +136,17 @@ export class GoodFPSController {
     let moveSpeed = this.isGrounded ? this.moveSpeed : this.airMoveSpeed;
     vec4.scale(moveDir, moveDir, moveSpeed * dt);
     
-    mat4.mul(this.globalMatrix, this.root.matrix, this.body.matrix);
+    mat4.mul(this.globalBodyMatrix, this.root.matrix, this.body.matrix);
     
     let moveVector = vec4.create();
-    vec4.transformMat4(moveVector, moveDir, this.globalMatrix);
+    vec4.transformMat4(moveVector, moveDir, this.globalBodyMatrix);
     moveVector = this.toVec3(moveVector);
     // apply movement
     vec3.add(this.root.translation, this.root.translation, moveVector);
     
     // apply gravity
-    let bodyDownDir = this.toVec3(vec4.transformMat4(vec4.create(), vec4.fromValues(0, -1, 0, 0), this.globalMatrix));
-    this.globalBodyPos = this.toVec3(vec4.transformMat4(vec4.create(), vec4.fromValues(0, 0, 0, 1), this.globalMatrix));
+    let bodyDownDir = this.toVec3(vec4.transformMat4(vec4.create(), vec4.fromValues(0, -1, 0, 0), this.globalBodyMatrix));
+    this.globalBodyPos = this.toVec3(vec4.transformMat4(vec4.create(), vec4.fromValues(0, 0, 0, 1), this.globalBodyMatrix));
     let gravityDir = vec3.normalize(vec3.create(), this.globalBodyPos);
     vec3.scale(gravityDir, gravityDir, -1);
 
@@ -175,11 +175,13 @@ export class GoodFPSController {
   async shoot() {
     if (this.leftMouseButtonPressed && Date.now() - this.lastShootTime >= this.shootCooldown) {
       this.lastShootTime = Date.now();
-      let forward = vec4.transformMat4(vec4.create(), vec4.fromValues(0, 0, -1, 0), this.globalMatrix);
-      vec4.transformQuat(forward, forward, this.camera.rotation)
-      let forwardVector = this.toVec3(forward);
-      let start = vec4.add(vec4.create(), this.globalBodyPos, vec4.fromValues(0, 2, 0, 0))
-      const bullet = new Bullet(this.bulletParent, start, this.bulletSpeed, forwardVector, 0, 7);
+
+      let globalCameraMatrix = mat4.create();
+      mat4.mul(globalCameraMatrix, this.globalBodyMatrix, this.camera.matrix);
+      let cameraForward = this.toVec3(vec4.transformMat4(vec4.create(), vec4.fromValues(0, 0, -1, 0), globalCameraMatrix));
+      let cameraPos = this.toVec3(vec4.transformMat4(vec4.create(), vec4.fromValues(0, 0, 0, 1), globalCameraMatrix));
+
+      const bullet = new Bullet(this.bulletParent, cameraPos, this.bulletSpeed, cameraForward, 0, 7);
       await bullet.initialize();
     }
   }

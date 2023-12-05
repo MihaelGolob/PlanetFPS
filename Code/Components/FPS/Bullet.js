@@ -18,13 +18,14 @@ export class Bullet {
         let loader = new GLTFLoader();
         await loader.load('../Assets/Models/sphere.gltf');
         this.node = loader.loadNode(0);
-        this.parent.addChild(this.node);
 
         // transform
         this.transform = new Transform();
         this.transform.translation = this.startPosition;
         this.transform.scale = [0.01, 0.01, 0.01];
         this.node.addComponent(this.transform);
+        
+        this.parent.addChild(this.node);
 
         // movement
         this.moveComponent = new MoveComponent(this.transform, this.speed, this.direction);
