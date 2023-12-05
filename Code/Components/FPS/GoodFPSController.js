@@ -12,7 +12,7 @@ export class GoodFPSController {
     this.cam = cam;
 
     // rotate parameters
-    this.sensitivity = 0.08;
+    this.sensitivity = 0.15;
     this.gravityAcceleration = 9.8;
 
     // movement parameters

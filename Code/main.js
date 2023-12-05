@@ -17,11 +17,22 @@ let oldTime = Date.now();
 const canvas = document.querySelector('canvas');
 
 // scene setup
-const gltfLoader = new GLTFLoader();
-await gltfLoader.load('./common/models/monkey.gltf');
-await gltfLoader.load('./Assets/ground.gltf');
+const planetLoader = new GLTFLoader();
+await planetLoader.load('./Assets/models/sphere.gltf');
 
-const scene = gltfLoader.loadScene(gltfLoader.defaultScene);
+// README: for each model you create a new loader (i think) and then
+// you can access the node with the 'loadNode' function.
+// Then just add the node to the scene.
+const ballLoader = new GLTFLoader();
+await ballLoader.load('./Assets/models/sphere.gltf');
+const ball = ballLoader.loadNode(0);
+const ballTransform = ball.getComponentOfType(Transform);
+ballTransform.translation = [0, 10, -4];
+ballTransform.scale = [0.1,0.1,0.1];
+
+const scene = planetLoader.loadScene(planetLoader.defaultScene);
+
+scene.addChild(ball);
 
 let FPSRoot = new Node();
 scene.addChild(FPSRoot);
