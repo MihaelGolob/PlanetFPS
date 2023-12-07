@@ -33,13 +33,13 @@ export class GLTFLoader {
       this.gltf = await this.fetchJson(this.gltfUrl);
     }
 
-    console.log("gltf after load", this.gltf, this.gltfUrl.pathname);
+    // console.log("gltf after load", this.gltf, this.gltfUrl.pathname);
 
     this.defaultScene = this.gltf.scene ?? 0;
     this.cache = new Map();
 
     await Promise.all(this.gltf.buffers?.map(buffer => this.preloadBuffer(buffer)) ?? []);
-    //await Promise.all(this.gltf.images?.map(image => this.preloadImage(image)) ?? []);
+    await Promise.all(this.gltf.images?.map(image => this.preloadImage(image)) ?? []);
   }
 
   async loadGLB(url) {

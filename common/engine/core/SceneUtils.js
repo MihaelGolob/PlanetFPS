@@ -1,4 +1,4 @@
-import { mat4 } from '../../../lib/gl-matrix-module.js';
+import { vec3, mat4 } from '../../../lib/gl-matrix-module.js';
 
 import { Camera } from './Camera.js';
 import { Model } from './Model.js';
@@ -39,4 +39,11 @@ export function getProjectionMatrix(node) {
 
 export function getModels(node) {
     return node.getComponentsOfType(Model);
+}
+
+export function toVec3(v4) {
+    if(v4[3]) {
+        return vec3.fromValues(v4[0]/v4[3], v4[1]/v4[3], v4[2]/v4[3]);
+    }
+    return vec3.fromValues(v4[0], v4[1], v4[2]);
 }

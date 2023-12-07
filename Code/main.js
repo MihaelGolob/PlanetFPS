@@ -1,36 +1,53 @@
 import { ResizeSystem } from '../common/engine/systems/ResizeSystem.js';
 import { UpdateSystem } from '../common/engine/systems/UpdateSystem.js';
-import { GLTFLoader } from '../common/engine/loaders/GLTFLoader.js';
 import { Renderer } from './Renderer.js';
-import { Light } from './Light.js';
 import { Scene } from './Scene.js';
-import { GoodFPSController } from './Components/FPS/GoodFPSController.js';
+import { Collider } from './Components/Collider.js';
 import {
   Camera,
   Model,
   Node,
   Transform,
 } from '../common/engine/core.js';
+import { NetworkManager } from './Network.js';
 
 // global variables
+export let debug_objects = [];
 let oldTime = Date.now();
 
 const canvas = document.querySelector('canvas');
 
+
+
 let sceneNode = new Scene();
 await sceneNode.initialize();
+
+for (let i in debug_objects) {
+  sceneNode.scene.addChild(debug_objects[i]);
+}
 
 const renderer = new Renderer(canvas);
 await renderer.initialize();
 
 function update(time, dt) {
+  let static_colliders = []
+  let dynamic_colliders = []
   sceneNode.scene.traverse(node => {
     for (const component of node.components) {
       component.update?.(time, dt);
+      if (component instanceof Collider) {
+        if (component.isStatic) {
+          static_colliders.push(node);
+        } else {
+          dynamic_colliders.push(node);
+        }
+      }
     }
   });
 
+  Collider.resolveCollisions(static_colliders, dynamic_colliders);
   updateStats();
+  NetworkManager.instance();
 }
 
 function updateStats() {

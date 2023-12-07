@@ -1,5 +1,7 @@
 import { quat, vec3, vec4, mat4 } from '../../../lib/gl-matrix-module.js';
 import { Bullet } from './Bullet.js';
+import { toVec3 } from '../../../common/engine/core/SceneUtils.js';
+import { NetworkManager } from '../../Network.js';
 
 export class GoodFPSController {
 
@@ -8,7 +10,7 @@ export class GoodFPSController {
     this.root = root;
     this.body = body;
     this.camera = camera;
-    this.bulletParent = bulletParent;
+    this.sceneNode = bulletParent;
 
     // rotate parameters
     this.sensitivity = 0.15;
@@ -28,7 +30,6 @@ export class GoodFPSController {
     this.grounded = false;
     
     // shoot parameters
-    this.bulletSpeed = 20;
     this.shootCooldown = 400;
     this.lastShootTime = 0;
     
@@ -100,13 +101,6 @@ export class GoodFPSController {
     });
   }
 
-  toVec3(v4) {
-    if(v4[3]) {
-        return vec3.fromValues(v4[0]/v4[3], v4[1]/v4[3], v4[2]/v4[3]);
-    }
-    return vec3.fromValues(v4[0], v4[1], v4[2]);
-  }
-
   updateRotation() {
     if(!this.mouseMoving)
       return;
@@ -140,26 +134,22 @@ export class GoodFPSController {
     
     let moveVector = vec4.create();
     vec4.transformMat4(moveVector, moveDir, this.globalBodyMatrix);
-    moveVector = this.toVec3(moveVector);
+    moveVector = toVec3(moveVector);
     // apply movement
     vec3.add(this.root.translation, this.root.translation, moveVector);
     
     // apply gravity
-    let bodyDownDir = this.toVec3(vec4.transformMat4(vec4.create(), vec4.fromValues(0, -1, 0, 0), this.globalBodyMatrix));
-    this.globalBodyPos = this.toVec3(vec4.transformMat4(vec4.create(), vec4.fromValues(0, 0, 0, 1), this.globalBodyMatrix));
+    let bodyDownDir = toVec3(vec4.transformMat4(vec4.create(), vec4.fromValues(0, -1, 0, 0), this.globalBodyMatrix));
+    this.globalBodyPos = toVec3(vec4.transformMat4(vec4.create(), vec4.fromValues(0, 0, 0, 1), this.globalBodyMatrix));
     let gravityDir = vec3.normalize(vec3.create(), this.globalBodyPos);
     vec3.scale(gravityDir, gravityDir, -1);
 
     let rotation = quat.rotationTo(quat.create(), bodyDownDir, gravityDir);
     quat.mul(this.root.rotation, rotation, this.root.rotation);
     
-    let globalRootPos = this.toVec3(vec4.transformMat4(vec4.create(), vec4.fromValues(0, 0, 0, 1), this.root.matrix));
-    // TODO: this should be checked via collision detection
-    this.isGrounded = vec3.len(globalRootPos) <= 10;
-
-    if (this.isGrounded) {
+    if (this.isGrounded && this.gravityVelocity <= 0) {
       this.gravityVelocity = 0;
-
+      
       if (this.keysDictionary['Space'] && Date.now() - this.lastJumpTime >= this.jumpCooldown) {
         this.lastJumpTime = Date.now();
         this.gravityVelocity = this.jumpHeight;
@@ -168,8 +158,14 @@ export class GoodFPSController {
       this.gravityVelocity += -this.gravityAcceleration * dt;
     }
 
+    this.isGrounded = false;
+    
     let gravityMove = vec3.scale(vec3.create(), gravityDir, -this.gravityVelocity * dt);
     vec3.add(this.root.translation, this.root.translation, gravityMove);
+
+    let globalRot = quat.mul(quat.create(), this.root.rotation, this.body.rotation);
+
+    NetworkManager.instance().sendPlayerTransform(this.root.translation,  globalRot );
   }
 
   async shoot() {
@@ -178,11 +174,15 @@ export class GoodFPSController {
 
       let globalCameraMatrix = mat4.create();
       mat4.mul(globalCameraMatrix, this.globalBodyMatrix, this.camera.matrix);
-      let cameraForward = this.toVec3(vec4.transformMat4(vec4.create(), vec4.fromValues(0, 0, -1, 0), globalCameraMatrix));
-      let cameraPos = this.toVec3(vec4.transformMat4(vec4.create(), vec4.fromValues(0, 0, 0, 1), globalCameraMatrix));
-
-      const bullet = new Bullet(this.bulletParent, cameraPos, this.bulletSpeed, cameraForward, 0, 7);
+      let cameraForward = toVec3(vec4.transformMat4(vec4.create(), vec4.fromValues(0, 0, -1, 0), globalCameraMatrix));
+      let cameraPos = toVec3(vec4.transformMat4(vec4.create(), vec4.fromValues(0, 0, 0, 1), globalCameraMatrix));
+      
+      let origin = vec3.add(vec3.create(), cameraPos, vec3.scale(vec3.create(), cameraForward, 1.5));
+      const bullet = new Bullet(this.sceneNode, origin, cameraForward);
       await bullet.initialize();
+
+      let nmanager = NetworkManager.instance();
+      nmanager.sendCreateBullet(origin, cameraForward);
     }
   }
 
