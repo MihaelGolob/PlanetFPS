@@ -10,14 +10,13 @@ import {
   Transform,
 } from '../common/engine/core.js';
 import { NetworkManager } from './Network.js';
+import { UserInterface } from './UserInterface.js';
 
 // global variables
 export let debug_objects = [];
 let oldTime = Date.now();
 
 const canvas = document.querySelector('canvas');
-
-
 
 let sceneNode = new Scene();
 await sceneNode.initialize();
@@ -48,6 +47,8 @@ function update(time, dt) {
   Collider.resolveCollisions(static_colliders, dynamic_colliders);
   updateStats();
   NetworkManager.instance();
+
+  //let UI = UserInterface.getInstance();
 }
 
 function updateStats() {
@@ -57,6 +58,7 @@ function updateStats() {
   oldTime = Date.now();
 
   document.getElementById('stat-fps').innerHTML = fps;
+
 }
 
 function render() {
@@ -65,6 +67,7 @@ function render() {
 
 function resize({ displaySize: { width, height } }) {
   sceneNode.camera.getComponentOfType(Camera).aspect = width / height;
+  // UserInterface.getInstance().updatePos();
 }
 
 new ResizeSystem({ canvas, resize }).start();

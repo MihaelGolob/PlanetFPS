@@ -11,7 +11,7 @@ import { Collider } from './Components/Collider.js';
 import { vec3, vec4, mat4, quat } from '../lib/gl-matrix-module.js';
 import { toVec3 } from '../common/engine/core/SceneUtils.js';
 import { NetworkManager } from './Network.js';
-import { InGameUI } from './UserInterface.js';
+import { InGameUI, UserInterface } from './UserInterface.js';
 
 export class Scene {
   constructor() {
@@ -43,7 +43,8 @@ export class Scene {
     this.scene.addChild(sun)
 
     // ui
-    this.userInterface = new InGameUI();
+    // UserInterface.instance = new InGameUI();
+    // this.userInterface = new InGameUI();
 
     // network
     NetworkManager.instance().sendCreateNetPlayer();

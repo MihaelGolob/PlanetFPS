@@ -1,4 +1,4 @@
-class UserInterface {
+export class UserInterface {
 
   constructor() {
     this.uiContainer = document.getElementById("ui-container")
@@ -10,11 +10,31 @@ class UserInterface {
 
     //this.removeAllcomponents();
     this.createElements();
+    this.updatePos();
+
+    UserInterface.instance = this;
   }
 
   removeAllcomponents() {
     while (this.uiContainer.firstChild) {
       this.uiContainer.removeChild(this.uiContainer.firstChild);
+    }
+  }
+
+  updatePos() {
+
+    console.log("UI change pos");
+
+    for (let i = 0; i < this.uiContainer.children.length; i++) {
+      let image = this.uiContainer.children[i];
+
+      image.style.position = 'absolute';
+
+      x = x - (image.width) / 2;
+      y = y - (image.height) / 2;
+
+      image.style.left = `${x}px`;
+      image.style.top = `${y}px`;
     }
   }
 
@@ -24,17 +44,8 @@ class UserInterface {
     image.src = src;
 
     image.addEventListener('load', () => {
-
       image.style.width = `${scale * 100}%`;
       image.style.height = `${scale * 100}%`;
-      image.style.position = 'absolute';
-
-      x = x - (image.width) / 2;
-      y = y - (image.height) / 2;
-
-      image.style.left = `${x}px`;
-      image.style.top = `${y}px`;
-
     });
 
     image.addEventListener('click', () => {
@@ -46,7 +57,16 @@ class UserInterface {
     this.uiContainer.appendChild(image);
   }
 
-  createElements() { throw new Error("Not implemented for class UserInterface.") }
+  createElements() { return; }
+
+  static getInstance() {
+    if (!UserInterface.instance) {
+      new UserInterface();
+    }
+
+    return UserInterface.instance;
+  }
+
 }
 
 export class InGameUI extends UserInterface {
