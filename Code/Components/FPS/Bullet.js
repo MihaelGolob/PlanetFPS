@@ -38,7 +38,6 @@ export class Bullet {
     colliderNode.addComponent(new Transform());
     let collider = new Collider(this.bulletNode, 0.1, false, (hitNode) => {
       this.parent.removeChild(this.bulletNode);
-      console.log('bullet collision, id:', hitNode.id);
     }, true);
     colliderNode.addComponent(collider);
     this.bulletNode.addChild(colliderNode);
@@ -46,7 +45,6 @@ export class Bullet {
     // self destroy
     let selfDestroy = new SelfDestroyComponent(this.bulletNode, this.parent, this.lifetime);
     this.bulletNode.addComponent(selfDestroy);
-
 
     // play sound
     const shootSound = document.getElementById('shoot-sound');

@@ -24,6 +24,9 @@ export class GoodFPSController {
     this.lastJumpTime = 0;
 
     this.isGrounded = true;
+    this.bopHeight = 0.015;
+    this.bopSpeed = 30;
+    this.bopInput = 0;
 
     // gravity
     this.gravityVelocity = 0;
@@ -129,7 +132,7 @@ export class GoodFPSController {
 
     let moveSpeed = this.isGrounded ? this.moveSpeed : this.airMoveSpeed;
     vec4.scale(moveDir, moveDir, moveSpeed * dt);
-    
+
     mat4.mul(this.globalBodyMatrix, this.root.matrix, this.body.matrix);
     
     let moveVector = vec4.create();
@@ -156,6 +159,12 @@ export class GoodFPSController {
       }
     } else {
       this.gravityVelocity += -this.gravityAcceleration * dt;
+    }
+
+    if (vec4.len(moveDir) > 0 && this.isGrounded) {
+      let bopFactor = Math.sin(this.bopSpeed * this.bopInput) * this.bopHeight;
+      this.camera.translation[1] += bopFactor;
+      this.bopInput += dt;
     }
 
     this.isGrounded = false;
