@@ -51,8 +51,9 @@ export class Scene {
   }
 
   async SpawnTrees() {
-    return;
-    for (let i = 0; i < Math.random() * 50 + 50; i++) {
+    let treeCount = Math.random() * 50 + 50;
+    treeCount = 10;
+    for (let i = 0; i < treeCount; i++) {
       let theta = Math.random() * 100 * Math.PI;
       let phi = Math.random() * 100 * Math.PI;
       await this.createTree(10, theta, phi);
