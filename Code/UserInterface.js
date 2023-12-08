@@ -5,7 +5,8 @@ class UserInterface {
 
     const canvas = document.getElementById("canvas");
     this.canvasStyle = getComputedStyle(canvas);
-    console.log(this.canvasStyle.width)
+    this.canvasWidth = parseInt(this.canvasStyle.width);
+    this.canvasHeight = parseInt(this.canvasStyle.height);
 
     //this.removeAllcomponents();
     this.createElements();
@@ -17,7 +18,7 @@ class UserInterface {
     }
   }
 
-  createUIElement(src, scale, x, y) {
+  createUIElement(src, scale, x, y, onClick = null) {
 
     const image = document.createElement('img');
     image.src = src;
@@ -36,6 +37,12 @@ class UserInterface {
 
     });
 
+    image.addEventListener('click', () => {
+      if (onClick && typeof onClick === 'function') {
+        onClick();
+      }
+    });
+
     this.uiContainer.appendChild(image);
   }
 
@@ -49,22 +56,21 @@ export class InGameUI extends UserInterface {
   }
 
   createElements() {
-    const canvasWidth = parseInt(this.canvasStyle.width);
-    const canvasHeight = parseInt(this.canvasStyle.height);
     // kill count
-    this.createUIElement("../Assets/ui_elements/Kill_count.png", 0.1, canvasWidth / 2, canvasHeight);
+    this.createUIElement("../Assets/ui_elements/Kill_count.png", 0.1, this.canvasWidth / 2, this.canvasHeight)
     // ammo count
-    this.createUIElement("../Assets/ui_elements/Ammo_count.png", 0.1, 0, canvasHeight);
+    this.createUIElement("../Assets/ui_elements/Ammo_count.png", 0.1, 0, this.canvasHeight);
     // lifecount
-    this.createUIElement("../Assets/ui_elements/Life_count.png", 0.1, canvasWidth, canvasHeight);
+    this.createUIElement("../Assets/ui_elements/Life_count.png", 0.1, this.canvasWidth, this.canvasHeight);
     // crosshair
-    this.createUIElement("../Assets/ui_elements/crosshair062.png", 0.025, canvasWidth / 2, canvasHeight / 2);
+    this.createUIElement("../Assets/ui_elements/crosshair062.png", 0.025, this.canvasWidth / 2, this.canvasHeight / 2);
   }
 }
 
 export class MainMenuUI extends UserInterface {
 
-  construcotr() {
+  constructor() {
     throw new Error("Not implemented");
+    super();
   }
 }
