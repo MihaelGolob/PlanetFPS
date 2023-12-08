@@ -11,6 +11,7 @@ import { Collider } from './Components/Collider.js';
 import { vec3, vec4, mat4, quat } from '../lib/gl-matrix-module.js';
 import { toVec3 } from '../common/engine/core/SceneUtils.js';
 import { NetworkManager } from './Network.js';
+import { InGameUI } from './UserInterface.js';
 
 export class Scene {
   constructor() {
@@ -42,58 +43,10 @@ export class Scene {
     this.scene.addChild(sun)
 
     // ui
-    const canvas = document.getElementById("canvas");
-    const canvasStyle = getComputedStyle(canvas);
-    const canvasWidth = parseInt(canvasStyle.width);
-    const canvasHeight = parseInt(canvasStyle.height);
-    const margin_lr = 50;
-    const margin_tb = 50;
-    this.createUIElement("../Assets/ui_elements/Kill_count.png", 0.1, canvasWidth / 2, canvasHeight, margin_lr, margin_tb);
-    this.createUIElement("../Assets/ui_elements/Ammo_count.png", 0.1, 0, canvasHeight, margin_lr, margin_tb);
-    this.createUIElement("../Assets/ui_elements/Life_count.png", 0.1, canvasWidth, canvasHeight, margin_lr, margin_tb);
-    // crosshair
-    this.createUIElement("../Assets/ui_elements/crosshair062.png", 0.025, canvasWidth / 2, canvasHeight / 2);
+    this.userInterface = new InGameUI();
 
+    // network
     NetworkManager.instance().sendCreateNetPlayer();
-  }
-
-  createUIElement(src, scale, x, y, margin_lr = 0, margin_tb = 0, text = "") {
-
-    const container = document.createElement('div');
-
-    const image = document.createElement('img');
-    image.src = src;
-
-    image.addEventListener('load', () => {
-
-      image.style.width = `${scale * 100}%`;
-      image.style.height = `${scale * 100}%`;
-      image.style.position = 'absolute';
-
-      x = x - (image.width) / 2;
-      y = y - (image.height) / 2;
-
-      image.style.left = `${x}px`;
-      image.style.top = `${y}px`;
-
-      // image.style.marginLeft = margin_lr;
-      // image.style.marginRight = margin_lr;
-      // image.style.marginTop = margin_tb;
-      // image.style.marginBottom = margin_tb;
-    });
-
-    container.appendChild(image);
-    //
-    // const textElement = document.createElement('div');
-    // textElement.style.fontFamily = 'Orbitron,';
-    // textElement.style.fontWeight = 900;
-    // textElement.innerText = "Neki neki";
-    // textElement.style.position = 'absolute';
-    // textElement.style.left = `${x - (image.width * scale) / 2}px`;
-    // textElement.style.top = `${y - (image.height * scale) / 2}px`;
-    // container.appendChild(textElement);
-    //
-    this.uiContainer.appendChild(container);
   }
 
   async loadModel(path) {
