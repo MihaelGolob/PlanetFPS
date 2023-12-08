@@ -65,17 +65,13 @@ export class Scene {
     image.src = src;
 
     image.addEventListener('load', () => {
-      console.log("image loaded");
 
       image.style.width = `${scale * 100}%`;
       image.style.height = `${scale * 100}%`;
       image.style.position = 'absolute';
-      console.log('width', image.width);
 
-      console.log('(x, y) before', x, y);
       x = x - (image.width) / 2;
       y = y - (image.height) / 2;
-      console.log('(x, y) after', x, y);
 
       image.style.left = `${x}px`;
       image.style.top = `${y}px`;
@@ -137,10 +133,16 @@ export class Scene {
     let rotation = quat.rotationTo(quat.create(), globalDown, gravityDir);
     quat.mul(treeTransform.rotation, rotation, treeTransform.rotation);
 
+    // spin
+    let randomRotationAngle = Math.random() * 2 * Math.PI;
+    let randomRotation = quat.setAxisAngle(quat.create(), vec3.fromValues(0, 1, 0), randomRotationAngle);
+    quat.mul(treeTransform.rotation, treeTransform.rotation, randomRotation);
+
     this.scene.addChild(tree);
   }
 
   async createTreeNode() {
+
     const treeLoader = new GLTFLoader();
     await treeLoader.load('../Assets/Models/drevo.gltf');
     let tree = treeLoader.loadNode(0);
