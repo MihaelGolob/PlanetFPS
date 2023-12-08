@@ -32,18 +32,6 @@
                 font-size: 20px;
             }
 
-            .crosshair {
-                position: absolute;
-                left: 50vw;
-                top: 50vh;
-
-                color: white;
-                opacity: 0.5;
-                font-size: 40px;
-                font-family: monospace;
-                z-index: 1000;
-            }
-
             #ui-container {
                 position: absolute;
                 top: 0;
@@ -52,13 +40,19 @@
                 height: 100%;
                 pointer-events: none; 
             }
+
+            @font-face {
+                font-family = 'Orbitron',
+                src: url('./Assets/Fonts/Orbitron.ttf') format('truetype');
+                font-weight: 100 900; /* Specify the available weight range */
+                font-style: normal;
+            }
         </style>
     </head>
     <body>
-        <canvas class="fullscreen"></canvas>
+        <canvas class="fullscreen" id ="canvas"></canvas>
         <div id="ui-container"/>
         <p class="fps">fps: <span id='stat-fps'>69</span></p>
-        <span class="crosshair">.</span>
 
         <audio id="shoot-sound" src="./Assets/sounds/gun_shot.mp3"></audio>
     </body>
