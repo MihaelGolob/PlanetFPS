@@ -16,8 +16,8 @@ export class NetworkManager {
     constructor() {
         this.id = Math.floor(10000 * Math.random() + 1);
         this._instance = null;
-        // this.socket = new WebSocket("ws://127.0.0.1:8088");
-        this.socket = new WebSocket("wss://socketsbay.com/wss/v2/1/demo/");
+        this.socket = new WebSocket("ws://127.0.0.1:8088");
+        // this.socket = new WebSocket("wss://socketsbay.com/wss/v2/1/demo/");
         this.socket.onmessage = async (event) => {
             try {
                 await this.onNetMsg(JSON.parse(event.data));

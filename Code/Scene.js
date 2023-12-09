@@ -187,7 +187,7 @@ export class Scene {
     gun.addComponent(gunComponent);
     FPSCamera.addChild(gun);
 
-    FPSRoot.addComponent(new GoodFPSController(FPSRoot, FPSRootTransform, bodyTransform, cameraTransform, gunComponent, this.scene));
+    FPSRoot.addComponent(new GoodFPSController(FPSRoot, FPSRootTransform, bodyTransform, cameraTransform, gun, this.scene));
 
     return [FPSRoot, FPSCamera];
   }

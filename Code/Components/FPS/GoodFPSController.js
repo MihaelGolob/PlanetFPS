@@ -3,16 +3,20 @@ import { Bullet } from './Bullet.js';
 import { toVec3 } from '../../../common/engine/core/SceneUtils.js';
 import { NetworkManager } from '../../Network.js';
 import { Transform } from '../../../common/engine/core/Transform.js';
+import { GunComponent } from '../GunComponent.js';
 
 export class GoodFPSController {
 
-  constructor(rootNode, root, body, camera, gunComponent, sceneNode) {
+  constructor(rootNode, root, body, camera, gun, sceneNode) {
     this.rootNode = rootNode;
     this.root = root;
     this.body = body;
     this.camera = camera;
     this.sceneNode = sceneNode;
-    this.gunComponent = gunComponent;
+
+    this.gunNode = gun
+    this.gunComponent = gun.getComponentOfType(GunComponent);
+    this.gunTransform = gun.getComponentOfType(Transform);
 
     // rotate parameters
     this.sensitivity = 0.15;
@@ -26,8 +30,8 @@ export class GoodFPSController {
     this.lastJumpTime = 0;
 
     this.isGrounded = true;
-    this.bopHeight = 0.008;
-    this.bopSpeed = 30;
+    this.bopHeight = 0.002;
+    this.bopSpeed = 25;
     this.bopInput = 0;
 
     // gravity
@@ -50,7 +54,7 @@ export class GoodFPSController {
 
     this.globalBodyMatrix = mat4.create();
     this.globalBodyPos = vec3.create();
-    this.cameraPos = camera.translation;
+    this.gunPos = this.gunTransform.translation;
 
     this.health = 100;
   }
@@ -180,7 +184,7 @@ export class GoodFPSController {
 
     if (vec4.len(moveDir) > 0 && this.isGrounded) {
       let bopFactor = Math.sin(this.bopSpeed * this.bopInput) * this.bopHeight;
-      this.camera.translation[1] = this.cameraPos[1] + bopFactor;
+      this.gunTransform.translation[1] = this.gunPos[1] + bopFactor;
       this.bopInput += dt;
       if (this.bopInput > 10)
         this.bopInput -= 10;
