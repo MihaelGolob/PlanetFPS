@@ -34,7 +34,7 @@ export class Bullet {
     this.bulletNode.addComponent(this.moveComponent);
 
     // collider
-    let colliderNode = new Node();
+    let colliderNode = new Node(420);
     colliderNode.addComponent(new Transform());
     let collider = new Collider(this.bulletNode, 0.1, false, (hitNode) => {
       this.parent.removeChild(this.bulletNode);

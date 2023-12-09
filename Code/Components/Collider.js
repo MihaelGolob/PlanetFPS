@@ -37,6 +37,21 @@ export class Collider {
                     dynamicCollider.onCollision?.(staticNode);
                 }
             });
+
+            dynamic_colliders.forEach(otherDynamicNode => {
+                if (dynamicNode == otherDynamicNode) return;
+
+                let otherDynamicCollider = otherDynamicNode.getComponentOfType(Collider);
+                let otherDynamicGlobalPos = Collider.getGlobalPosition(otherDynamicNode);
+
+                let distanceVector = vec3.create();
+                vec3.sub(distanceVector, dynamicGlobalPos, otherDynamicGlobalPos);
+                let distVectorLen = vec3.len(distanceVector);
+
+                if (distVectorLen < dynamicCollider.radius + otherDynamicCollider.radius) {
+                    dynamicCollider.onCollision?.(otherDynamicNode);
+                }
+            });
         });
     }
 

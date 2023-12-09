@@ -5,12 +5,12 @@ import { NetworkManager } from '../../Network.js';
 
 export class GoodFPSController {
 
-  constructor(rootNode, root, body, camera, bulletParent) {
+  constructor(rootNode, root, body, camera, sceneNode) {
     this.rootNode = rootNode;
     this.root = root;
     this.body = body;
     this.camera = camera;
-    this.sceneNode = bulletParent;
+    this.sceneNode = sceneNode;
 
     // rotate parameters
     this.sensitivity = 0.15;
@@ -48,6 +48,8 @@ export class GoodFPSController {
 
     this.globalBodyMatrix = mat4.create();
     this.globalBodyPos = vec3.create();
+
+    this.health = 100;
   }
 
   initInputHandler() {
@@ -102,6 +104,18 @@ export class GoodFPSController {
     this.keysToTrack.forEach((key, _) => {
       this.keysDictionary[key] = 0;
     });
+  }
+
+  takeDamage(damage) {
+    this.health -= damage;
+    console.log('health: ' + this.health);
+
+    if (this.health <= 0) {
+      // todo: die go to menu
+      this.sceneNode.removeChild(this.rootNode);
+      console.log('you suck');
+      NetworkManager.instance().sendDestroyNetPlayer();
+    }
   }
 
   updateRotation() {

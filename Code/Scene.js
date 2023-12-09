@@ -13,6 +13,8 @@ import { toVec3 } from '../common/engine/core/SceneUtils.js';
 import { NetworkManager } from './Network.js';
 import { InGameUI, UserInterface } from './UserInterface.js';
 import { SkyboxComponent } from './Components/util/SkyboxComponent.js';
+import { MoveComponent } from './Components/util/MoveComponent.js';
+import { treeData } from './data/TreeData.js';
 
 export class Scene {
   constructor() {
@@ -33,9 +35,9 @@ export class Scene {
     this.scene.addChild(ground);
     
     // trees
-    // await this.SpawnTrees();
+    await this.SpawnTrees();
     await this.SpawnGrass('../Assets/Models/grass01.gltf');
-    await this.SpawnGrass('../Assets/Models/grass02.gltf');
+    // await this.SpawnGrass('../Assets/Models/grass02.gltf');
     
     // fps + camera
     const [fps, camera] = await this.createFPSController();
@@ -69,24 +71,21 @@ export class Scene {
   }
 
   async SpawnTrees() {
-    // return;
-    for (let i = 0; i < Math.random() * 50 + 50; i++) {
-      let theta = Math.random() * 100 * Math.PI;
-      let phi = Math.random() * 100 * Math.PI;
-      await this.createObjectOnSphere(10, theta, phi, this.createTreeNode, this); // you are wondering why I am passing this as context? I am wondering too, JavaScript is weird
+    for (let i = 0; i < treeData.length; i++) {
+      await this.createObjectOnSphere(10, treeData[i].theta, treeData[i].phi, treeData[i].randomRotation, this.createTreeNode, this);
     }
   }
 
   async SpawnGrass(path) {
-    for (let i = 0; i < Math.random() * 100 + 50; i++) {
+    for (let i = 0; i < 500; i++) {
       let theta = Math.random() * 100 * Math.PI;
       let phi = Math.random() * 100 * Math.PI;
-      await this.createObjectOnSphere(10, theta, phi, this.createGrassNode, this, path);
+      await this.createObjectOnSphere(10, theta, phi, 0, this.createGrassNode, this, path);
     }
   }
 
   // TODO: get more tree models
-  async createObjectOnSphere(radius, theta, phi, nodeCreator, context, path = null) {
+  async createObjectOnSphere(radius, theta, phi, randomAngle, nodeCreator, context, path = null) {
     let objectNode = null;
     if (path != null) {
       objectNode = await nodeCreator(context, path);
@@ -113,8 +112,7 @@ export class Scene {
     quat.mul(objectTransform.rotation, rotation, objectTransform.rotation);
 
     // spin
-    let randomRotationAngle = Math.random() * 2 * Math.PI;
-    let randomRotation = quat.setAxisAngle(quat.create(), vec3.fromValues(0, 1, 0), randomRotationAngle);
+    let randomRotation = quat.setAxisAngle(quat.create(), vec3.fromValues(0, 1, 0), randomAngle);
     quat.mul(objectTransform.rotation, objectTransform.rotation, randomRotation);
 
     this.scene.addChild(objectNode);
@@ -152,7 +150,13 @@ export class Scene {
     let FPSRootTransform = new Transform({ translation: [0, 20, 0] });
     FPSRoot.addComponent(FPSRootTransform);
 
-    let FPSCollider = new Collider(FPSRoot, 1, false, () => { });
+    let FPSCollider = new Collider(FPSRoot, 1, false, (otherNode) => {
+      let checkIfBullet = otherNode.id == 420;
+      if (!checkIfBullet) return;
+
+      let damage = 50;
+      FPSRoot.getComponentOfType(GoodFPSController).takeDamage(damage);
+    });
     // await FPSCollider.initializeDebugDraw();
     FPSRoot.addChild(this.createColliderNode([0, 0.5, 0], FPSCollider, 1));
 

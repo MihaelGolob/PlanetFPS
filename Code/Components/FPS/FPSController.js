@@ -14,6 +14,8 @@ export class FPSController {
     // movement direction initialization
     this.viewDirection = vec3.fromValues(0, 0, -1)
     this.upDirection = vec3.fromValues(0, 1, 0);
+
+    this.health = 100;
   }
 
   initInputHandler() {
