@@ -18,6 +18,12 @@ let oldTime = Date.now();
 
 const canvas = document.querySelector('canvas');
 
+// play background mucic
+const backgroundMusic = document.getElementById('background-music');
+backgroundMusic.volume = 0.1;
+backgroundMusic.loop = true;
+backgroundMusic.play();
+
 let sceneNode = new Scene();
 await sceneNode.initialize();
 
