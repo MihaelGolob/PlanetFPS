@@ -183,7 +183,7 @@ export class Scene {
     light.addComponent(new Transform({
       translation: [x, y, z],
     }));
-    light.addComponent(new Light({ ambient: 0.6, shininess: 3 }));
+    light.addComponent(new Light({ ambient: 0.3, shininess: 3 }));
 
     return light;
   }
