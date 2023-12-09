@@ -24,7 +24,7 @@ export class GoodFPSController {
     this.lastJumpTime = 0;
 
     this.isGrounded = true;
-    this.bopHeight = 0.015;
+    this.bopHeight = 0.01;
     this.bopSpeed = 30;
     this.bopInput = 0;
 

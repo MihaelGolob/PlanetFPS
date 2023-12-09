@@ -33,6 +33,8 @@ export class Scene {
 
     // trees
     await this.SpawnTrees();
+    await this.SpawnGrass('../Assets/Models/grass01.gltf');
+    await this.SpawnGrass('../Assets/Models/grass02.gltf');
 
     // fps + camera
     const [fps, camera] = await this.createFPSController();
@@ -61,13 +63,26 @@ export class Scene {
     for (let i = 0; i < Math.random() * 50 + 50; i++) {
       let theta = Math.random() * 100 * Math.PI;
       let phi = Math.random() * 100 * Math.PI;
-      await this.createTree(10, theta, phi);
+      await this.createObjectOnSphere(10, theta, phi, this.createTreeNode, this); // you are wondering why I am passing this as context? I am wondering too, JavaScript is weird
+    }
+  }
+
+  async SpawnGrass(path) {
+    for (let i = 0; i < Math.random() * 100 + 50; i++) {
+      let theta = Math.random() * 100 * Math.PI;
+      let phi = Math.random() * 100 * Math.PI;
+      await this.createObjectOnSphere(10, theta, phi, this.createGrassNode, this, path);
     }
   }
 
   // TODO: get more tree models
-  async createTree(radius, theta, phi) {
-    let tree = await this.createTreeNode();
+  async createObjectOnSphere(radius, theta, phi, nodeCreator, context, path = null) {
+    let objectNode = null;
+    if (path != null) {
+      objectNode = await nodeCreator(context, path);
+    } else {
+      objectNode = await nodeCreator(context);
+    }
 
     let sin_phi = Math.sin(phi);
     let cos_phi = Math.cos(phi);
@@ -76,43 +91,49 @@ export class Scene {
 
     // tree position
     let globalPosition = vec3.fromValues(radius * sin_theta * cos_phi, radius * sin_theta * sin_phi, radius * cos_theta);
-    let treeTransform = tree.getComponentOfType(Transform);
-    treeTransform.translation = globalPosition;
+    let objectTransform = objectNode.getComponentOfType(Transform);
+    objectTransform.translation = globalPosition;
 
     // tree rotation
-    let globalDown = toVec3(vec4.transformMat4(vec4.create(), vec4.fromValues(0, -1, 0, 0), treeTransform.matrix));
+    let globalDown = toVec3(vec4.transformMat4(vec4.create(), vec4.fromValues(0, -1, 0, 0), objectTransform.matrix));
     let gravityDir = vec3.normalize(vec3.create(), globalPosition);
     vec3.scale(gravityDir, gravityDir, -1);
 
     let rotation = quat.rotationTo(quat.create(), globalDown, gravityDir);
-    quat.mul(treeTransform.rotation, rotation, treeTransform.rotation);
+    quat.mul(objectTransform.rotation, rotation, objectTransform.rotation);
 
     // spin
     let randomRotationAngle = Math.random() * 2 * Math.PI;
     let randomRotation = quat.setAxisAngle(quat.create(), vec3.fromValues(0, 1, 0), randomRotationAngle);
-    quat.mul(treeTransform.rotation, treeTransform.rotation, randomRotation);
+    quat.mul(objectTransform.rotation, objectTransform.rotation, randomRotation);
 
-    this.scene.addChild(tree);
+    this.scene.addChild(objectNode);
   }
 
-  async createTreeNode() {
-
+  async createTreeNode(context) {
     const treeLoader = new GLTFLoader();
     await treeLoader.load('../Assets/Models/drevo.gltf');
     let tree = treeLoader.loadNode(0);
     let collider1 = new Collider(tree, 0.6, true, () => { })
     // await collider1.initializeDebugDraw();
-    tree.addChild(this.createColliderNode([-0.08, 0.8, 0.06], collider1));
+    tree.addChild(context.createColliderNode([-0.08, 0.8, 0.06], collider1));
 
     let collider2 = new Collider(tree, 0.6, true, () => { })
     // await collider2.initializeDebugDraw();
-    tree.addChild(this.createColliderNode([0.07, 1.92, -0.15], collider2));
+    tree.addChild(context.createColliderNode([0.07, 1.92, -0.15], collider2));
 
     let collider3 = new Collider(tree, 1.6, true, () => { })
     // await collider3.initializeDebugDraw();
-    tree.addChild(this.createColliderNode([0.13, 3.57, 0.2], collider3));
+    tree.addChild(context.createColliderNode([0.13, 3.57, 0.2], collider3));
 
     return tree;
+  }
+
+  async createGrassNode(context, path) {
+    const grassLoader = new GLTFLoader();
+    await grassLoader.load(path);
+    let grass = grassLoader.loadNode(0);
+    return grass;
   }
 
   async createFPSController() {
