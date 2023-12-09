@@ -12,6 +12,7 @@ import { vec3, vec4, mat4, quat } from '../lib/gl-matrix-module.js';
 import { toVec3 } from '../common/engine/core/SceneUtils.js';
 import { NetworkManager } from './Network.js';
 import { InGameUI, UserInterface } from './UserInterface.js';
+import { SkyboxComponent } from './Components/util/SkyboxComponent.js';
 
 export class Scene {
   constructor() {
@@ -30,16 +31,22 @@ export class Scene {
     let groundCollider = new Collider(ground, 10, true, () => { });
     ground.addChild(this.createColliderNode([0, 0, 0], groundCollider));
     this.scene.addChild(ground);
-
+    
     // trees
-    await this.SpawnTrees();
+    // await this.SpawnTrees();
     await this.SpawnGrass('../Assets/Models/grass01.gltf');
     await this.SpawnGrass('../Assets/Models/grass02.gltf');
-
+    
     // fps + camera
     const [fps, camera] = await this.createFPSController();
     this.camera = camera;
     this.scene.addChild(fps);
+
+    // skybox
+    let skybox = await this.loadModel('../Assets/Models/skybox.gltf');
+    skybox.addComponent(new SkyboxComponent(skybox, fps.getComponentOfType(Transform)));
+    this.scene.addChild(skybox);
+
     // light
     let sun1 = this.createLight(-10, 20, 0);
     this.scene.addChild(sun1);
