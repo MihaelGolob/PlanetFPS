@@ -41,8 +41,11 @@ export class Scene {
     this.camera = camera;
     this.scene.addChild(fps);
     // light
-    let sun = this.createLight(3, 10, 1);
-    this.scene.addChild(sun)
+    let sun1 = this.createLight(-10, 20, 0);
+    this.scene.addChild(sun1);
+
+    let sun2 = this.createLight(10, -20, 0);
+    this.scene.addChild(sun2);
 
     // ui
     // UserInterface.instance = new InGameUI();

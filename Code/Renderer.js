@@ -165,11 +165,13 @@ export class Renderer extends BaseRenderer {
             layout: this.pipeline.getBindGroupLayout(3),
             entries: [
                 { binding: 0, resource: { buffer: lightUniformBuffer } },
+                { binding: 1, resource: { buffer: lightUniformBuffer } },
             ],
         });
 
         const gpuObjects = { lightUniformBuffer, lightBindGroup };
         this.gpuObjects.set(light, gpuObjects);
+
         return gpuObjects;
     }
 
@@ -208,16 +210,35 @@ export class Renderer extends BaseRenderer {
         this.device.queue.writeBuffer(cameraUniformBuffer, 128, cameraPosition);
         this.renderPass.setBindGroup(0, cameraBindGroup);
 
-        const light = scene.find(node => node.getComponentOfType(Light));
-        const lightComponent = light.getComponentOfType(Light);
-        const lightMatrix = getGlobalModelMatrix(light);
-        const lightPosition = mat4.getTranslation(vec3.create(), lightMatrix);
+        const lights = scene.filter(node => node.getComponentOfType(Light));
+        let entries = [];
+        for (let i = 0; i < lights.length; i++) {
+            const lightUniformBuffer = this.device.createBuffer({
+                size: 32,
+                usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+            });
+            
+            let light = lights[i];
+            const lightComponent = light.getComponentOfType(Light);
+            const lightMatrix = getGlobalModelMatrix(light);
+            const lightPosition = mat4.getTranslation(vec3.create(), lightMatrix);
+            
+            // const { lightUniformBuffer, lightBindGroup } = this.prepareLight(lightComponent);
+            this.device.queue.writeBuffer(lightUniformBuffer, 0, lightPosition);
+            this.device.queue.writeBuffer(lightUniformBuffer, 12, new Float32Array([lightComponent.ambient]));
+            this.device.queue.writeBuffer(lightUniformBuffer, 16, new Float32Array([lightComponent.shininess]));
 
-        const { lightUniformBuffer, lightBindGroup } = this.prepareLight(lightComponent);
-        this.device.queue.writeBuffer(lightUniformBuffer, 0, lightPosition);
-        this.device.queue.writeBuffer(lightUniformBuffer, 12, new Float32Array([lightComponent.ambient]));
-        this.device.queue.writeBuffer(lightUniformBuffer, 16, new Float32Array([lightComponent.shininess]));
+            entries.push({ binding: i, resource: { buffer: lightUniformBuffer } });
+        }
+        
+        const lightBindGroup = this.device.createBindGroup({
+            layout: this.pipeline.getBindGroupLayout(3),
+            entries: entries,
+        });
         this.renderPass.setBindGroup(3, lightBindGroup);
+        
+        // const gpuObjects = { lightUniformBuffer, lightBindGroup };
+        // this.gpuObjects.set(light, gpuObjects);
 
         this.renderNode(scene);
 

@@ -50,7 +50,8 @@ struct LightUniforms {
 @group(2) @binding(1) var baseTexture : texture_2d<f32>;
 @group(2) @binding(2) var baseSampler : sampler;
 
-@group(3) @binding(0) var<uniform> light : LightUniforms;
+@group(3) @binding(0) var<uniform> light0 : LightUniforms;
+@group(3) @binding(1) var<uniform> light1 : LightUniforms;
 
 @vertex
 fn vertex(input : VertexInput) -> VertexOutput {
@@ -69,18 +70,20 @@ fn fragment(input : FragmentInput) -> FragmentOutput {
     var output : FragmentOutput;
 
     let N = normalize(input.normal);
-    let L = normalize(light.position - input.position);
-    let E = normalize(camera.position - input.position);
-    let lambert = max(dot(N, L), 0);
+    let L0 = normalize(light0.position - input.position);
+    let L1 = normalize(light1.position - input.position);
+    let lambert0 = max(dot(N, L0), 0);
+    let lambert1 = max(dot(N, L1), 0);
 
-    let R = reflect(-L, N);
-    let phong = pow(max(dot(R, E), 0), light.shininess);
+    let R0 = reflect(-L0, N);
+    let R1 = reflect(-L1, N);
 
     let materialColor = textureSample(baseTexture, baseSampler, input.texcoords) * material.baseFactor;
-    let lambertFactor = vec3(lambert);
-    let ambientFactor = vec3(light.ambient);
-    let phongFactor = vec3(phong);
-    output.color = vec4(materialColor.rgb * (lambertFactor + ambientFactor) + phongFactor, 1);
+    let lambertFactor0 = vec3(lambert0);
+    let lambertFactor1 = vec3(lambert1);
+    let ambientFactor = vec3(light0.ambient);
+
+    output.color = vec4(materialColor.rgb * (lambertFactor0 + lambertFactor1 + ambientFactor), 1);
 
     return output;
 }
