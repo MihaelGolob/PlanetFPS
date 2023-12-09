@@ -6,6 +6,7 @@ import {
   Node,
   Transform,
 } from '../common/engine/core.js';
+import { NetworkPlayerInterpolationComponent } from "./Components/NetworkPlayerInterpolationComponent.js";
 
 export class NetworkPlayer {
     constructor(id, name) {
@@ -29,6 +30,9 @@ export class NetworkPlayer {
         this.transform.translation = this.position;
         this.transform.rotation = this.rotation;
         NetworkManager.instance().sceneNode.addChild(this.playerNode);
+
+        // transform updater
+        this.playerNode.addComponent(new NetworkPlayerInterpolationComponent(this.transform));
     }    
 
     setTransform(position, rotation) {

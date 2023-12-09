@@ -15,6 +15,7 @@ import { InGameUI, UserInterface } from './UserInterface.js';
 import { SkyboxComponent } from './Components/util/SkyboxComponent.js';
 import { MoveComponent } from './Components/util/MoveComponent.js';
 import { treeData } from './data/TreeData.js';
+import { GunComponent } from './Components/GunComponent.js';
 
 export class Scene {
   constructor() {
@@ -37,7 +38,7 @@ export class Scene {
     // trees
     await this.SpawnTrees();
     await this.SpawnGrass('../Assets/Models/grass01.gltf');
-    // await this.SpawnGrass('../Assets/Models/grass02.gltf');
+    await this.SpawnGrass('../Assets/Models/grass02.gltf');
     
     // fps + camera
     const [fps, camera] = await this.createFPSController();
@@ -77,7 +78,7 @@ export class Scene {
   }
 
   async SpawnGrass(path) {
-    for (let i = 0; i < 500; i++) {
+    for (let i = 0; i < 200; i++) {
       let theta = Math.random() * 100 * Math.PI;
       let phi = Math.random() * 100 * Math.PI;
       await this.createObjectOnSphere(10, theta, phi, 0, this.createGrassNode, this, path);
@@ -177,7 +178,16 @@ export class Scene {
     let cameraTransform = new Transform({ translation: [0, 1.5, 0], });
     FPSCamera.addComponent(cameraTransform);
 
-    FPSRoot.addComponent(new GoodFPSController(FPSRoot, FPSRootTransform, bodyTransform, cameraTransform, this.scene));
+    let gunLoader = new GLTFLoader();
+    await gunLoader.load('../Assets/Models/gun.gltf');
+    let gun = gunLoader.loadNode(0);
+    let gunTransform = gun.getComponentOfType(Transform);
+    gunTransform.translation = [1.5, -1, -2.4];
+    let gunComponent = new GunComponent(gunTransform);
+    gun.addComponent(gunComponent);
+    FPSCamera.addChild(gun);
+
+    FPSRoot.addComponent(new GoodFPSController(FPSRoot, FPSRootTransform, bodyTransform, cameraTransform, gunComponent, this.scene));
 
     return [FPSRoot, FPSCamera];
   }

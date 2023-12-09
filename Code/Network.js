@@ -1,6 +1,7 @@
 import { Bullet } from "./Components/FPS/Bullet.js";
 import { NetworkPlayer } from "./NetworkPlayer.js";
 import { Transform } from "../common/engine/core/Transform.js";
+import { NetworkPlayerInterpolationComponent } from "./Components/NetworkPlayerInterpolationComponent.js";
 
 const Formats = {
     FmtCreatePlayer: 0,
@@ -15,9 +16,15 @@ export class NetworkManager {
     constructor() {
         this.id = Math.floor(10000 * Math.random() + 1);
         this._instance = null;
-        this.socket = new WebSocket("ws://127.0.0.1:8088");
+        // this.socket = new WebSocket("ws://127.0.0.1:8088");
+        this.socket = new WebSocket("wss://socketsbay.com/wss/v2/1/demo/");
         this.socket.onmessage = async (event) => {
-            await this.onNetMsg(JSON.parse(event.data));
+            try {
+                await this.onNetMsg(JSON.parse(event.data));
+            } 
+            catch {
+                console.log("Error parsing message: ", event.data);
+            }
         };       
         this.sendQueue = [];
         this.sendTransformBuffer = null;
@@ -70,7 +77,10 @@ export class NetworkManager {
                 if(!player)
                     break;
 
-                player.setTransform(msg.data.position, msg.data.rotation);
+                // player.setTransform(msg.data.position, msg.data.rotation);
+                let updateTransform = player.playerNode.getComponentOfType(NetworkPlayerInterpolationComponent);
+                updateTransform.updateTransform(msg.data.position, msg.data.rotation);
+
                 break;
             }
             case Formats.FmtDestroyPlayer: {

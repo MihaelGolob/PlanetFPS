@@ -2,15 +2,17 @@ import { quat, vec3, vec4, mat4 } from '../../../lib/gl-matrix-module.js';
 import { Bullet } from './Bullet.js';
 import { toVec3 } from '../../../common/engine/core/SceneUtils.js';
 import { NetworkManager } from '../../Network.js';
+import { Transform } from '../../../common/engine/core/Transform.js';
 
 export class GoodFPSController {
 
-  constructor(rootNode, root, body, camera, sceneNode) {
+  constructor(rootNode, root, body, camera, gunComponent, sceneNode) {
     this.rootNode = rootNode;
     this.root = root;
     this.body = body;
     this.camera = camera;
     this.sceneNode = sceneNode;
+    this.gunComponent = gunComponent;
 
     // rotate parameters
     this.sensitivity = 0.15;
@@ -24,7 +26,7 @@ export class GoodFPSController {
     this.lastJumpTime = 0;
 
     this.isGrounded = true;
-    this.bopHeight = 0.01;
+    this.bopHeight = 0.008;
     this.bopSpeed = 30;
     this.bopInput = 0;
 
@@ -48,6 +50,7 @@ export class GoodFPSController {
 
     this.globalBodyMatrix = mat4.create();
     this.globalBodyPos = vec3.create();
+    this.cameraPos = camera.translation;
 
     this.health = 100;
   }
@@ -177,8 +180,10 @@ export class GoodFPSController {
 
     if (vec4.len(moveDir) > 0 && this.isGrounded) {
       let bopFactor = Math.sin(this.bopSpeed * this.bopInput) * this.bopHeight;
-      this.camera.translation[1] += bopFactor;
+      this.camera.translation[1] = this.cameraPos[1] + bopFactor;
       this.bopInput += dt;
+      if (this.bopInput > 10)
+        this.bopInput -= 10;
     }
 
     this.isGrounded = false;
@@ -206,6 +211,7 @@ export class GoodFPSController {
 
       let nmanager = NetworkManager.instance();
       nmanager.sendCreateBullet(origin, cameraForward);
+      this.gunComponent.shoot();
     }
   }
 
