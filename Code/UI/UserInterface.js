@@ -37,7 +37,7 @@ export class UserInterface {
   //   }
   // }
 
-  createUIElement(src, scale, x, y, id = "", text = "", onClick = null, textbox = "") {
+  createUIElement(src, scale, x, y, id = "", text = "", onClick = null, textbox = "", hover = false) {
     // Create a container for the image and text
     const container = document.createElement('div');
     container.style.position = 'absolute';
@@ -66,6 +66,10 @@ export class UserInterface {
 
     if (onClick && typeof onClick === 'function') {
       image.addEventListener('click', onClick);
+    }
+
+    if (hover) {
+      container.classList.add('hover-effect');
     }
 
     container.appendChild(image);

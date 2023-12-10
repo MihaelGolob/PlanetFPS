@@ -33,12 +33,12 @@ export class MainMenuUI extends UserInterface {
     header.style.top = '50px';
     this.uiContainer.appendChild(header);
     // enter Name
-    this.createUIElement('../../Assets/ui_elements/Blue_button_3_big.png', 0.2, this.canvasWidth / 2, this.canvasHeight / 2 - 150, "enter-name", "", null, "Vnesi ime");
+    this.createUIElement('../../Assets/ui_elements/Blue_button_3_big.png', 0.2, this.canvasWidth / 2, this.canvasHeight / 2 - 150, "enter-name", "", null, "Vnesi ime", true);
     // ip
-    this.createUIElement('../../Assets/ui_elements/Blue_button_3_big.png', 0.2, this.canvasWidth / 2, this.canvasHeight / 2 + 50, "ip", "", null, "Vnesi ip");
+    this.createUIElement('../../Assets/ui_elements/Blue_button_3_big.png', 0.2, this.canvasWidth / 2, this.canvasHeight / 2 + 50, "ip", "", null, "Vnesi ip", true);
     // play button
     this.createUIElement('../../Assets/ui_elements/Blue_button_3_big.png', 0.2, this.canvasWidth / 2, this.canvasHeight / 2 + 250, "", "Play", async () => {
       await State.setState(GameState);
-    });
+    }, "", true);
   }
 }
