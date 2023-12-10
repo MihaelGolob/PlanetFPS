@@ -181,7 +181,7 @@ export class Scene {
     FPSCamera.addComponent(cameraTransform);
 
     let gunLoader = new GLTFLoader();
-    await gunLoader.load('../Assets/Models/gun.gltf');
+    await gunLoader.load('../Assets/Models/gun2.gltf');
     let gun = gunLoader.loadNode(0);
     let gunTransform = gun.getComponentOfType(Transform);
     gunTransform.translation = [1.5, -1, -2.4];
