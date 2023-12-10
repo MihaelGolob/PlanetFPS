@@ -35,7 +35,7 @@ export class MainMenuUI extends UserInterface {
     // enter Name
     this.createUIElement('../../Assets/ui_elements/Blue_button_3_big.png', 0.2, this.canvasWidth / 2, this.canvasHeight / 2 - 150, "enter-name", "", null, "Vnesi ime", true);
     // ip
-    this.createUIElement('../../Assets/ui_elements/Blue_button_3_big.png', 0.2, this.canvasWidth / 2, this.canvasHeight / 2 + 50, "ip", "", null, "Vnesi ip", true);
+    this.createUIElement('../../Assets/ui_elements/Blue_button_3_big.png', 0.2, this.canvasWidth / 2, this.canvasHeight / 2 + 50, "ip", "", null, "127.0.0.1:8080", true);
     // play button
     this.createUIElement('../../Assets/ui_elements/Blue_button_3_big.png', 0.2, this.canvasWidth / 2, this.canvasHeight / 2 + 250, "", "Play", async () => {
       await State.setState(GameState);

@@ -15,7 +15,6 @@ export class State {
 
     const currInstance = State.getInstance();
     if (currInstance) {
-      console.log("deleting state");
       currInstance.onDeleteState();
     }
 

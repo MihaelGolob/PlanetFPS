@@ -19,12 +19,19 @@ export class GameState extends State {
   constructor() {
     super();
 
+    const nameElement = document.getElementById("enter-name")
+    this.name = nameElement.textContent;
+
+    const ipElement = document.getElementById("ip")
+    this.ip = ipElement.value;
+
     this.oldTime = Date.now();
   }
 
   async onEnterState() {
+
     document.getElementById('loading-screen').style.display = 'flex';
-    this.sceneNode = new Scene();
+    this.sceneNode = new Scene(this.ip);
     await this.sceneNode.initialize();
 
     UserInterface.setInstance(InGameUI);

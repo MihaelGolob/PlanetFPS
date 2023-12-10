@@ -90,9 +90,10 @@ export class UserInterface {
       container.appendChild(textElement);
     }
 
-    if (textbox) {
+    if (textbox && !text) {
       const textboxElement = document.createElement('input');
       textboxElement.type = 'text';
+      textboxElement.value = textbox;
       textboxElement.placeholder = textbox;
       textboxElement.style.position = 'absolute';
       textboxElement.style.top = '50%';
@@ -101,10 +102,12 @@ export class UserInterface {
       textboxElement.style.zIndex = '10';
       textboxElement.style.fontFamily = 'Orbitron';
       textboxElement.style.fontSize = '20px';
+      textboxElement.id = id;
       container.appendChild(textboxElement);
     }
 
     this.uiContainer.appendChild(container);
+
   }
 
   createElements() { return; }

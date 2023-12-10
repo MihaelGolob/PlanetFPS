@@ -20,10 +20,10 @@ import { treeData } from './data/TreeData.js';
 import { GunComponent } from './Components/GunComponent.js';
 
 export class Scene {
-  constructor() {
+  constructor(ip) {
     this.scene = new Node();
     this.uiContainer = document.getElementById("ui-container");
-    NetworkManager.instance().setSceneNode(this.scene);
+    NetworkManager.instance(ip).setSceneNode(this.scene);
   }
 
   async initialize() {
