@@ -19,23 +19,6 @@ export class UserInterface {
       this.uiContainer.removeChild(this.uiContainer.firstChild);
     }
   }
-  //
-  // updatePos() {
-  //
-  //   console.log("UI change pos");
-  //
-  //   for (let i = 0; i < this.uiContainer.children.length; i++) {
-  //     let image = this.uiContainer.children[i];
-  //
-  //     image.style.position = 'absolute';
-  //
-  //     x = x - (image.width) / 2;
-  //     y = y - (image.height) / 2;
-  //
-  //     image.style.left = `${x}px`;
-  //     image.style.top = `${y}px`;
-  //   }
-  // }
 
   createUIElement(src, scale, xPercent, yPercent, id = "", text = "", onClick = null, textbox = "", hover = false, opacity = 1.0) {
     // Create a container for the image and text
@@ -45,6 +28,7 @@ export class UserInterface {
     container.style.justifyContent = 'center';
     container.style.alignItems = 'center';
     container.style.opacity = opacity;
+    container.id = 'ui-container-div';
 
     const image = document.createElement('img');
     image.src = src;
@@ -105,6 +89,52 @@ export class UserInterface {
     }
 
     this.uiContainer.appendChild(container);
+
+  }
+
+  createUIDropdownElement(src, scale, xPercent, yPercent, id) {
+
+    let container = document.createElement('div');
+    container.style.position = 'absolute';
+    container.style.display = 'flex';
+    container.style.justifyContent = 'center';
+    container.style.alignItems = 'center';
+    container.id = 'ui-container-div';
+
+    const image = document.createElement('img');
+    image.src = src;
+
+    image.addEventListener('load', () => {
+      const imageScaledWidth = image.naturalWidth * scale;
+      const imageScaledHeight = image.naturalHeight * scale;
+
+      image.style.width = `${imageScaledWidth}px`;
+      image.style.height = `${imageScaledHeight}px`;
+
+      container.style.left = `${xPercent}%`;
+      container.style.top = `${yPercent}%`;
+      container.style.transform = 'translate(-50%, -50%)';
+      container.style.width = `${imageScaledWidth}px`;
+      container.style.height = `${imageScaledHeight}px`;
+    });
+
+    container.appendChild(image)
+
+    const selectElement = document.createElement('select');
+    selectElement.id = id;
+    selectElement.style.position = 'absolute';
+    selectElement.style.top = '50%';
+    selectElement.style.left = '50%';
+    selectElement.style.width = '75%';
+    selectElement.style.transform = 'translate(-50%, -50%)';
+    selectElement.style.zIndex = '10';
+    selectElement.style.fontFamily = 'Orbitron';
+    selectElement.style.fontSize = '20px';
+    selectElement.id = id;
+
+    container.appendChild(selectElement)
+
+    document.getElementById('ui-container').appendChild(container)
 
   }
 

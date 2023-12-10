@@ -14,13 +14,10 @@ export let NetworkPlayers = {};
 export class NetworkManager {
 
   constructor(ip) {
+    console.log(ip);
     this.id = Math.floor(10000 * Math.random() + 1);
     this._instance = null;
-    // this.socket = new WebSocket("ws://127.0.0.1:8080");
-    // this.socket = new WebSocket("ws://178.79.99.132:8088");
-    // this.socket = new WebSocket("wss://ws.postman-echo.com/raw");
-    // this.socket = new WebSocket("wss://socketsbay.com/wss/v2/1/demo/");
-    this.socket = new WebSocket("ws://" + ip);
+    this.socket = new WebSocket(ip);
     this.socket.onmessage = async (event) => {
       try {
         await this.onNetMsg(JSON.parse(event.data));
@@ -75,6 +72,7 @@ export class NetworkManager {
         this.send(msg.sender_id, Formats.FmtCreatePlayer, null);
         break;
       }
+
       case Formats.FmtSendPlayerTransform: {
         let player = NetworkPlayers[msg.sender_id];
         if (!player)

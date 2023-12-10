@@ -35,7 +35,8 @@ export class MainMenuUI extends UserInterface {
     // enter Name
     this.createUIElement('../../Assets/ui_elements/Blue_button_3_big.png', 0.2, 50, 35, "enter-name", "", null, "Vnesi ime", true);
     // ip
-    this.createUIElement('../../Assets/ui_elements/Blue_button_3_big.png', 0.2, 50, 55, "ip", "", null, "127.0.0.1:8080", true);
+    // this.createUIElement('../../Assets/ui_elements/Blue_button_3_big.png', 0.2, 50, 55, "ip", "", null, "127.0.0.1:8080", true);
+    this.createUIDropdownElement('../../Assets/ui_elements/Blue_button_3_big.png', 0.2, 50, 55, 'ip-list')
     // play button
     this.createUIElement('../../Assets/ui_elements/Blue_button_3_big.png', 0.2, 50, 75, "", "Play", async () => {
       // play background mucic

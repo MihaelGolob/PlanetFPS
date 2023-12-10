@@ -1,6 +1,7 @@
 export class State {
 
   constructor() {
+    this.ip = "";
   }
 
   static getInstance() {
@@ -18,8 +19,9 @@ export class State {
       currInstance.onDeleteState();
     }
 
-
     let newInstance = new newState();
+    newInstance.ip = currInstance?.ip;
+    console.log(newInstance);
     State.instance = newInstance;
     await newInstance.onEnterState();
   }

@@ -8,10 +8,25 @@ export class MainMenuState extends State {
   }
 
   async onEnterState() {
+
+    const response = await fetch('https://benjaminlipnik.eu/public/pages/planet_runner/?servers');
+    const data = await response.json();
+
     UserInterface.setInstance(MainMenuUI);
+
+    const ipListElement = document.getElementById('ip-list');
+
+    data.forEach(item => {
+      const option = document.createElement('option');
+      option.value = item;
+      option.textContent = item;
+
+      ipListElement.appendChild(option);
+    });
   }
 
   onDeleteState() {
-
+    const ipListElement = document.getElementById('ip-list');
+    this.ip = ipListElement.value;
   }
 }
