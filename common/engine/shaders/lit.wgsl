@@ -83,7 +83,7 @@ fn fragment(input : FragmentInput) -> FragmentOutput {
     let lambertFactor1 = vec3(lambert1);
     let ambientFactor = vec3(light0.ambient);
     
-    let lightColor = vec3(0.83, 0.60, 0.74);
+    let lightColor = vec3(0.73, 0.70, 0.84);
 
     output.color = vec4(materialColor.rgb * (lightColor * (lambertFactor0 + lambertFactor1 + ambientFactor)), 1);
 
