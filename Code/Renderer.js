@@ -12,6 +12,7 @@ import { BaseRenderer } from '../common/engine/renderers/BaseRenderer.js';
 import { Light } from './Light.js';
 import { Transform } from '../common/engine/core/Transform.js';
 import { hitParameter } from './Components/FPS/GoodFPSController.js';
+import { SkyboxComponent } from './Components/util/SkyboxComponent.js';
 
 const vertexBufferLayout = {
     arrayStride: 32,
@@ -96,15 +97,21 @@ export class Renderer extends BaseRenderer {
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
         });
 
+        const useUnlitBuffer = this.device.createBuffer({
+            size: 4,
+            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+        });
+
         const modelBindGroup = this.device.createBindGroup({
             layout: this.pipeline.getBindGroupLayout(1),
             entries: [
                 { binding: 0, resource: { buffer: modelUniformBuffer } },
                 { binding: 1, resource: { buffer: hitParameterBuffer } },
+                { binding: 2, resource: { buffer: useUnlitBuffer } },
             ],
         });
 
-        const gpuObjects = { modelUniformBuffer, hitParameterBuffer, modelBindGroup };
+        const gpuObjects = { modelUniformBuffer, hitParameterBuffer, useUnlitBuffer, modelBindGroup };
         this.gpuObjects.set(node, gpuObjects);
         return gpuObjects;
     }
@@ -257,11 +264,13 @@ export class Renderer extends BaseRenderer {
         const localMatrix = getLocalModelMatrix(node);
         modelMatrix = mat4.multiply(mat4.create(), modelMatrix, localMatrix);
 
-        const { modelUniformBuffer, hitParameterBuffer, modelBindGroup } = this.prepareNode(node);
+        let useUnlit = node.getComponentOfType(SkyboxComponent) != null;
+        const { modelUniformBuffer, hitParameterBuffer, useUnlitBuffer, modelBindGroup } = this.prepareNode(node);
         const normalMatrix = this.mat3tomat4(mat3.normalFromMat4(mat3.create(), modelMatrix));
         this.device.queue.writeBuffer(modelUniformBuffer, 0, modelMatrix);
         this.device.queue.writeBuffer(modelUniformBuffer, 64, normalMatrix);
         this.device.queue.writeBuffer(hitParameterBuffer, 0, new Float32Array([hitParameter]));
+        this.device.queue.writeBuffer(useUnlitBuffer, 0, new Float32Array([useUnlit ? 0.0 : 1.0]));
         this.renderPass.setBindGroup(1, modelBindGroup);
 
         for (const model of getModels(node)) {

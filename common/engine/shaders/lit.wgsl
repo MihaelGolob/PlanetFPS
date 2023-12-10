@@ -46,6 +46,7 @@ struct LightUniforms {
 
 @group(1) @binding(0) var<uniform> model : ModelUniforms;
 @group(1) @binding(1) var<uniform> hitParameter : f32;
+@group(1) @binding(2) var<uniform> useUnlit : f32;
 
 @group(2) @binding(0) var<uniform> material : MaterialUniforms;
 @group(2) @binding(1) var baseTexture : texture_2d<f32>;
@@ -86,7 +87,11 @@ fn fragment(input : FragmentInput) -> FragmentOutput {
     
     let lightColor = vec3(0.73, 0.70, 0.84);
 
-    output.color = vec4(materialColor.rgb * (lightColor * (lambertFactor0 + lambertFactor1 + ambientFactor)), 1);
+    if (useUnlit < 0.5) {
+        output.color = vec4(materialColor.rgb, 1);
+    } else {
+        output.color = vec4(materialColor.rgb * (lightColor * (lambertFactor0 + lambertFactor1 + ambientFactor)), 1);
+    }
     output.color = hitParameter * vec4(1, 0, 0, 1) + (1 - hitParameter) * output.color;
 
     return output;
