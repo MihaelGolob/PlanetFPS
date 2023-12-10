@@ -85,6 +85,8 @@ export class UserInterface {
       textElement.style.fontFamily = 'Orbitron';
       textElement.id = id;
 
+      textElement.addEventListener('click', onClick);
+
       container.appendChild(textElement);
     }
 

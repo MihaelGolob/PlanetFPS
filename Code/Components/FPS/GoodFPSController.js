@@ -6,6 +6,7 @@ import { Transform } from '../../../common/engine/core/Transform.js';
 import { GunComponent } from '../GunComponent.js';
 import { UserInterface } from '../../UI/UserInterface.js';
 import { MainMenuUI } from '../../UI/MainMenuUI.js';
+import { PlayerDeadUI } from '../../UI/PlayerDeadUI.js';
 
 export class GoodFPSController {
 
@@ -132,6 +133,8 @@ export class GoodFPSController {
       this.sceneNode.removeChild(this.rootNode);
       console.log('you suck');
       NetworkManager.instance().sendDestroyNetPlayer();
+
+      UserInterface.setInstance(PlayerDeadUI);
     }
   }
 
