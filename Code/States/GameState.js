@@ -23,7 +23,7 @@ export class GameState extends State {
   }
 
   async onEnterState() {
-
+    document.getElementById('loading-screen').style.display = 'flex';
     this.sceneNode = new Scene();
     await this.sceneNode.initialize();
 
@@ -32,16 +32,18 @@ export class GameState extends State {
     this.renderer = new Renderer(canvas);
     await this.renderer.initialize();
 
+    this.resizeSystem = new ResizeSystem({ canvas, resize: this.resize.bind(this) });
+    this.resizeSystem.start();
+    this.updateSystem = new UpdateSystem({ update: this.update.bind(this), render: this.render.bind(this) });
+    this.updateSystem.start();
 
-
-
-    this.resizeSystem = new ResizeSystem({ canvas, resize: this.resize.bind(this) }).start();
-    this.updateSystem = new UpdateSystem({ update: this.update.bind(this), render: this.render.bind(this) }).start();
+    document.getElementById('loading-screen').style.display = 'none';
   }
 
   onDeleteState() {
     this.resizeSystem.stop();
     this.updateSystem.stop();
+    delete this.sceneNode;
   }
 
   resize({ displaySize: { width, height } }) {

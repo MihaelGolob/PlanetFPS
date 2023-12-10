@@ -46,8 +46,23 @@
                 font-weight: 100 900; /* Specify the available weight range */
                 font-style: normal;
             }
+            #loading-screen {
+                position: fixed;
+                width: 100vw;
+                height: 100vh;
+                background-color: black;
+                color: white;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 2em;
+                z-index: 1000; // Make sure it's on top
+            }
+    
         </style>
     </head>
+    <div id="loading-screen" style="display: none;">Loading...</div>
+
     <body>
         <canvas class="fullscreen" id ="canvas"></canvas>
         <div id="ui-container"></div>/>

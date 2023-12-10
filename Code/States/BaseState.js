@@ -14,11 +14,14 @@ export class State {
   static async setState(newState) {
 
     const currInstance = State.getInstance();
-    if (currInstance)
+    if (currInstance) {
+      console.log("deleting state");
       currInstance.onDeleteState();
+    }
+
 
     let newInstance = new newState();
-    console.log(newInstance);
+    State.instance = newInstance;
     await newInstance.onEnterState();
   }
 
