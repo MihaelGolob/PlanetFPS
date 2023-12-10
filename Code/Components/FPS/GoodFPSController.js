@@ -96,15 +96,15 @@ export class GoodFPSController {
       }
     });
 
-    document.querySelector('canvas').addEventListener('mousemove', (event) => {
+    document.querySelector('body').addEventListener('mousemove', (event) => {
       this.dx = event.movementX * this.sensitivity;
       this.dy = event.movementY * this.sensitivity;
 
       this.mouseMoving = true;
     });
 
-    document.querySelector('canvas').addEventListener('click', async () => {
-      await document.querySelector('canvas').requestPointerLock({
+    document.querySelector('body').addEventListener('click', async () => {
+      await document.querySelector('body').requestPointerLock({
         unadjustedMovement: true,
       });
     });

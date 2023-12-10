@@ -14,7 +14,7 @@ export class InGameUI extends UserInterface {
     // lifecount
     this.createUIElement("../Assets/ui_elements/Life_count.png", 0.2, this.canvasWidth - 50, this.canvasHeight - 50, "life-count", "100");
     // crosshair
-    this.createUIElement("../Assets/ui_elements/crosshair062.png", 1, this.canvasWidth / 2, this.canvasHeight / 2);
+    this.createUIElement("../Assets/ui_elements/crosshair062.png", 1, this.canvasWidth / 2, this.canvasHeight / 2, "", "", null, "", false, 0.7);
   }
 }
 

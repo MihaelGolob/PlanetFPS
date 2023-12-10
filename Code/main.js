@@ -15,14 +15,18 @@ import { GameState } from './States/GameState.js';
 import { State } from './States/BaseState.js';
 import { MainMenuState } from './States/MainMenuState.js';
 
+function click(element) {
+  console.log('clicked on', element);
+}
+
 // global variables
 export let debug_objects = [];
 let oldTime = Date.now();
 
 const canvas = document.querySelector('canvas');
 
-
 document.addEventListener('DOMContentLoaded', (event) => {
+  console.log('DOM fully loaded and parsed');
   const canvas = document.getElementById('canvas');
 
   // Function to lock the pointer
@@ -52,8 +56,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
     }
   }
 });
-
-
 
 // play background mucic
 const backgroundMusic = document.getElementById('background-music');

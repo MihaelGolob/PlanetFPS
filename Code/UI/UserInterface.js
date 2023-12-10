@@ -37,16 +37,18 @@ export class UserInterface {
   //   }
   // }
 
-  createUIElement(src, scale, x, y, id = "", text = "", onClick = null, textbox = "", hover = false) {
+  createUIElement(src, scale, x, y, id = "", text = "", onClick = null, textbox = "", hover = false, opacity = 1.0) {
     // Create a container for the image and text
     const container = document.createElement('div');
     container.style.position = 'absolute';
     container.style.display = 'flex';
     container.style.justifyContent = 'center';
     container.style.alignItems = 'center';
+    container.style.opacity = opacity;
 
     const image = document.createElement('img');
     image.src = src;
+    image.opacity = opacity;
 
     image.addEventListener('load', () => {
       const imageScaledWidth = image.naturalWidth * scale;
