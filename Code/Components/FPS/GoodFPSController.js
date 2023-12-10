@@ -109,11 +109,20 @@ export class GoodFPSController {
       this.mouseMoving = true;
     });
 
-    document.querySelector('body').addEventListener('click', async () => {
-      await document.querySelector('body').requestPointerLock({
-        unadjustedMovement: true,
+    document.addEventListener('mousedown', (event) => {
+      if (event.button == 0) {
+        this.leftMouseButtonPressed = true;
+      }
+
+      document.querySelector('canvas').requestPointerLock({
       });
     });
+
+    // document.querySelector('body').addEventListener('click', async () => {
+    //   await document.querySelector('body').requestPointerLock({
+    //     unadjustedMovement: true,
+    //   });
+    // });
   }
 
   setupKeysDictionary() {
