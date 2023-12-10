@@ -37,7 +37,7 @@ export class UserInterface {
   //   }
   // }
 
-  createUIElement(src, scale, x, y, id = "", text = "", onClick = null, textbox = "", hover = false, opacity = 1.0) {
+  createUIElement(src, scale, xPercent, yPercent, id = "", text = "", onClick = null, textbox = "", hover = false, opacity = 1.0) {
     // Create a container for the image and text
     const container = document.createElement('div');
     container.style.position = 'absolute';
@@ -57,11 +57,9 @@ export class UserInterface {
       image.style.width = `${imageScaledWidth}px`;
       image.style.height = `${imageScaledHeight}px`;
 
-      const xRatio = ((x - imageScaledWidth / 2) / this.canvasWidth) * 100;
-      const yRatio = ((y - imageScaledHeight / 2) / this.canvasHeight) * 100;
-
-      container.style.left = `${xRatio}%`;
-      container.style.top = `${yRatio}%`;
+      container.style.left = `${xPercent}%`;
+      container.style.top = `${yPercent}%`;
+      container.style.transform = 'translate(-50%, -50%)';
       container.style.width = `${imageScaledWidth}px`;
       container.style.height = `${imageScaledHeight}px`;
     });
