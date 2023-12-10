@@ -16,6 +16,8 @@ export class MainMenuState extends State {
 
     const ipListElement = document.getElementById('ip-list');
 
+    data.push('ws://localhost:8080')
+    data.push('ws://localhost:8088')
     data.forEach(item => {
       const option = document.createElement('option');
       option.value = item;
