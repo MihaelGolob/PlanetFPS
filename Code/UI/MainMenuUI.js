@@ -8,15 +8,37 @@ export class MainMenuUI extends UserInterface {
   }
 
   createElements() {
-    // Play Button
-    this.createUIElement('../../Assets/ui_elements/Blue_button_3_big.png', 0.2, this.canvasWidth / 2, 100, "", "Play", async () => {
+    // background
+    const background = document.createElement('div');
+    background.style.position = 'absolute';
+    background.style.top = '0';
+    background.style.left = '0';
+    background.style.width = '100%';
+    background.style.height = '100%';
+    background.style.backgroundImage = 'url("../../Assets/backgrounds/bkg1_left2.png")'; // Replace with your image path
+    background.style.backgroundSize = 'cover';
+    background.style.backgroundPosition = 'center';
+    background.style.backgroundRepeat = 'no-repeat';
+    background.style.zIndex = '-1';
+    this.uiContainer.appendChild(background);
+    // title
+    const header = document.createElement('h1');
+    header.textContent = "Planet FPS";
+    header.style.textAlign = 'center';
+    header.style.color = 'white';
+    header.style.fontFamily = 'Orbitron, sans-serif';
+    header.style.fontSize = '72px';
+    header.style.position = 'absolute';
+    header.style.width = '100%';
+    header.style.top = '50px';
+    this.uiContainer.appendChild(header);
+    // enter Name
+    this.createUIElement('../../Assets/ui_elements/Blue_button_3_big.png', 0.2, this.canvasWidth / 2, this.canvasHeight / 2 - 150, "enter-name", "", null, "Vnesi ime");
+    // ip
+    this.createUIElement('../../Assets/ui_elements/Blue_button_3_big.png', 0.2, this.canvasWidth / 2, this.canvasHeight / 2 + 50, "ip", "", null, "Vnesi ip");
+    // play button
+    this.createUIElement('../../Assets/ui_elements/Blue_button_3_big.png', 0.2, this.canvasWidth / 2, this.canvasHeight / 2 + 250, "", "Play", async () => {
       await State.setState(GameState);
     });
-    // ammo count
-    this.createUIElement('../../Assets/ui_elements/Blue_button_3_big.png', 0.2, this.canvasWidth / 2, 300)
-    // lifecount
-    this.createUIElement('../../Assets/ui_elements/Blue_button_3_big.png', 0.2, this.canvasWidth / 2, 600)
-    // crosshair
-    this.createUIElement('../../Assets/ui_elements/Blue_button_3_big.png', 0.2, this.canvasWidth / 2, this.canvasHeight - 50)
   }
 }

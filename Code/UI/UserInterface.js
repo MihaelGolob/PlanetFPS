@@ -37,7 +37,7 @@ export class UserInterface {
   //   }
   // }
 
-  createUIElement(src, scale, x, y, id = "", text = "", onClick = null) {
+  createUIElement(src, scale, x, y, id = "", text = "", onClick = null, textbox = "") {
     // Create a container for the image and text
     const container = document.createElement('div');
     container.style.position = 'absolute';
@@ -76,9 +76,24 @@ export class UserInterface {
       textElement.style.position = 'absolute';
       textElement.style.color = 'white';
       textElement.style.fontSize = '20px';
+      textElement.style.fontFamily = 'Orbitron';
       textElement.id = id;
 
       container.appendChild(textElement);
+    }
+
+    if (textbox) {
+      const textboxElement = document.createElement('input');
+      textboxElement.type = 'text';
+      textboxElement.placeholder = textbox;
+      textboxElement.style.position = 'absolute';
+      textboxElement.style.top = '50%';
+      textboxElement.style.left = '50%';
+      textboxElement.style.transform = 'translate(-50%, -50%)';
+      textboxElement.style.zIndex = '10';
+      textboxElement.style.fontFamily = 'Orbitron';
+      textboxElement.style.fontSize = '20px';
+      container.appendChild(textboxElement);
     }
 
     this.uiContainer.appendChild(container);
