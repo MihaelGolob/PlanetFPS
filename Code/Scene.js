@@ -171,7 +171,7 @@ export class Scene {
     let FPSRootTransform = new Transform({ translation: [0, 20, 0] });
     FPSRoot.addComponent(FPSRootTransform);
 
-    let FPSCollider = new Collider(FPSRoot, 1, false, (otherNode) => {
+    let FPSCollider = new Collider(FPSRoot, 0.6, false, (otherNode) => {
       let checkIfBullet = otherNode.id == 420;
       if (!checkIfBullet) return;
 
@@ -179,7 +179,7 @@ export class Scene {
       FPSRoot.getComponentOfType(GoodFPSController).takeDamage(damage);
     });
     // await FPSCollider.initializeDebugDraw();
-    FPSRoot.addChild(this.createColliderNode([0, 0.5, 0], FPSCollider, 1));
+    FPSRoot.addChild(this.createColliderNode([0, 0.6, 0], FPSCollider, 1));
 
     let isGroundedCollider = new Collider(FPSRoot, 0.09, false, () => {
       FPSRoot.getComponentOfType(GoodFPSController).isGrounded = true;
