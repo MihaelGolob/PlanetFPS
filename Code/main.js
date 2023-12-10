@@ -15,10 +15,6 @@ import { GameState } from './States/GameState.js';
 import { State } from './States/BaseState.js';
 import { MainMenuState } from './States/MainMenuState.js';
 
-function click(element) {
-  console.log('clicked on', element);
-}
-
 // global variables
 export let debug_objects = [];
 let oldTime = Date.now();
