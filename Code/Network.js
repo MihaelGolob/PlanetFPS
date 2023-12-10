@@ -93,7 +93,7 @@ export class NetworkManager {
         console.log(msg.data.killedBy)
         if (msg.data.killedBy == this.id) {
           let killCount = document.getElementById('kill-count');
-          let curKillCount = killCount.textContent;
+          let curKillCount = parseInt(killCount.textContent);
           killCount.textContent = curKillCount + 1;
         }
 
