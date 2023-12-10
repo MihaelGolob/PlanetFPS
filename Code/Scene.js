@@ -41,6 +41,7 @@ export class Scene {
     await this.SpawnTrees();
     await this.SpawnGrass('../Assets/Models/grass01.gltf');
     await this.SpawnGrass('../Assets/Models/grass02.gltf');
+    await this.SpawnRocks('../Assets/Models/rock.gltf');
 
     // fps + camera
     const [fps, camera] = await this.createFPSController();
@@ -83,7 +84,17 @@ export class Scene {
     for (let i = 0; i < 200; i++) {
       let theta = Math.random() * 100 * Math.PI;
       let phi = Math.random() * 100 * Math.PI;
-      await this.createObjectOnSphere(10, theta, phi, 0, this.createGrassNode, this, path);
+      let randomRotation = Math.random() * 100 * Math.PI;
+      await this.createObjectOnSphere(10, theta, phi, randomRotation, this.createGrassNode, this, path);
+    }
+  }
+
+  async SpawnRocks(path) {
+    for (let i = 0; i < 200; i++) {
+      let theta = Math.random() * 100 * Math.PI;
+      let phi = Math.random() * 100 * Math.PI;
+      let randomRotation = Math.random() * 100 * Math.PI;
+      await this.createObjectOnSphere(10, theta, phi, randomRotation, this.createRockNode, this, path);
     }
   }
 
@@ -145,6 +156,13 @@ export class Scene {
     await grassLoader.load(path);
     let grass = grassLoader.loadNode(0);
     return grass;
+  }
+
+  async createRockNode(context, path) {
+    const rockLoader = new GLTFLoader();
+    await rockLoader.load(path);
+    let rock = rockLoader.loadNode(0);
+    return rock;
   }
 
   async createFPSController() {
