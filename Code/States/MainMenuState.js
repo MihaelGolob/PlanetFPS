@@ -1,12 +1,17 @@
-import { UserInterface, MainMenuUI } from "../UserInterface.js";
-import { BaseState } from "./BaseState.js";
+import { MainMenuUI } from "../UI/MainMenuUI.js";
+import { UserInterface } from "../UI/UserInterface.js";
+import { State } from "./BaseState.js";
 
-export class MainMenuState extends BaseState {
-    constructor() {
-        UserInterface.instance() = new MainMenuUI();
-    }
+export class MainMenuState extends State {
+  constructor() {
+    super();
+  }
 
-    startGame() {
+  async onEnterState() {
+    UserInterface.setInstance(MainMenuUI);
+  }
 
-    }
+  onDeleteState() {
+
+  }
 }

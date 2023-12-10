@@ -10,72 +10,77 @@ import {
   Transform,
 } from '../../common/engine/core.js';
 import { NetworkManager } from '../Network.js';
-import { BaseState } from "./BaseState.js";
+import { State } from "./BaseState.js";
 import { debug_objects } from '../main.js';
+import { UserInterface } from '../UI/UserInterface.js';
+import { InGameUI } from '../UI/InGameUI.js';
 
-export class GameState extends BaseState {
-    constructor() {
-        super();
+export class GameState extends State {
+  constructor() {
+    super();
 
-        this.oldTime = Date.now();
-    }
+    this.oldTime = Date.now();
+  }
 
-    update(time, dt) {
-        let static_colliders = []
-        let dynamic_colliders = []
-        this.sceneNode.scene.traverse(node => {
-            for (const component of node.components) {
-            component.update?.(time, dt);
-            if (component instanceof Collider) {
-                if (component.isStatic) {
-                    static_colliders.push(node);
-                } else {
-                    dynamic_colliders.push(node);
-                }
-            }
-            }
-        });
-        
-        Collider.resolveCollisions(static_colliders, dynamic_colliders);
-        updateStats();
-        NetworkManager.instance();
-    }
+  async onEnterState() {
 
-    updateStats() {
-        let now = Date.now();
-        let delta = now - oldTime;
-        let fps = (1000 / delta).toFixed(1);
-        this.oldTime = Date.now();
-        
-        document.getElementById('stat-fps').innerHTML = fps;
-    }
+    this.sceneNode = new Scene();
+    await this.sceneNode.initialize();
 
-    render() {
-        this.renderer.render(this.sceneNode.scene, this.sceneNode.camera);
-    }
+    UserInterface.setInstance(InGameUI);
 
-    resize({ displaySize: { width, height } }) {
-        this.sceneNode.camera.getComponentOfType(Camera).aspect = width / height;
-        // UserInterface.getInstance().updatePos();
-    }
+    this.renderer = new Renderer(canvas);
+    await this.renderer.initialize();
 
-    async enter() {
-        const canvas = document.querySelector('canvas');
 
-        this.sceneNode = new Scene();
-        await this.sceneNode.initialize();
-        
-        for (let i in debug_objects) {
-            sceneNode.scene.addChild(debug_objects[i]);
+
+
+    this.resizeSystem = new ResizeSystem({ canvas, resize: this.resize.bind(this) }).start();
+    this.updateSystem = new UpdateSystem({ update: this.update.bind(this), render: this.render.bind(this) }).start();
+  }
+
+  onDeleteState() {
+    this.resizeSystem.stop();
+    this.updateSystem.stop();
+  }
+
+  resize({ displaySize: { width, height } }) {
+    this.sceneNode.camera.getComponentOfType(Camera).aspect = width / height;
+  }
+
+  render() {
+    this.renderer.render(this.sceneNode.scene, this.sceneNode.camera);
+  }
+
+  updateStats() {
+    let now = Date.now();
+    let delta = now - this.oldTime;
+    let fps = (1000 / delta).toFixed(1);
+    this.oldTime = Date.now();
+
+    document.getElementById('stat-fps').innerHTML = fps;
+
+  }
+
+  update(time, dt) {
+    let static_colliders = []
+    let dynamic_colliders = []
+    this.sceneNode.scene.traverse(node => {
+      for (const component of node.components) {
+        component.update?.(time, dt);
+        if (component instanceof Collider) {
+          if (component.isStatic) {
+            static_colliders.push(node);
+          } else {
+            dynamic_colliders.push(node);
+          }
         }
-        
-        this.renderer = new Renderer(canvas);
-        await this.renderer.initialize();
+      }
+    });
 
-        let resize = this.resize
-        let update = this.update
-        let render = this.render
-        new ResizeSystem({ canvas, resize }).start();
-        new UpdateSystem({ update, render }).start();
-   }
+    Collider.resolveCollisions(static_colliders, dynamic_colliders);
+    this.updateStats();
+    NetworkManager.instance();
+  }
 }
+

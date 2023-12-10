@@ -11,7 +11,9 @@ import { Collider } from './Components/Collider.js';
 import { vec3, vec4, mat4, quat } from '../lib/gl-matrix-module.js';
 import { toVec3 } from '../common/engine/core/SceneUtils.js';
 import { NetworkManager } from './Network.js';
-import { InGameUI, UserInterface } from './UserInterface.js';
+import { UserInterface } from './UI/UserInterface.js';
+import { InGameUI } from './UI/InGameUI.js';
+import { MainMenuUI } from './UI/MainMenuUI.js';
 import { SkyboxComponent } from './Components/util/SkyboxComponent.js';
 import { MoveComponent } from './Components/util/MoveComponent.js';
 import { treeData } from './data/TreeData.js';
@@ -34,12 +36,12 @@ export class Scene {
     let groundCollider = new Collider(ground, 10, true, () => { });
     ground.addChild(this.createColliderNode([0, 0, 0], groundCollider));
     this.scene.addChild(ground);
-    
+
     // trees
     await this.SpawnTrees();
     await this.SpawnGrass('../Assets/Models/grass01.gltf');
     await this.SpawnGrass('../Assets/Models/grass02.gltf');
-    
+
     // fps + camera
     const [fps, camera] = await this.createFPSController();
     this.camera = camera;
@@ -58,7 +60,7 @@ export class Scene {
     this.scene.addChild(sun2);
 
     // ui
-    // UserInterface.instance = new InGameUI();
+    UserInterface.setInstance(InGameUI);
     // this.userInterface = new InGameUI();
 
     // network

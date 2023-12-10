@@ -4,6 +4,8 @@ import { toVec3 } from '../../../common/engine/core/SceneUtils.js';
 import { NetworkManager } from '../../Network.js';
 import { Transform } from '../../../common/engine/core/Transform.js';
 import { GunComponent } from '../GunComponent.js';
+import { UserInterface } from '../../UI/UserInterface.js';
+import { MainMenuUI } from '../../UI/MainMenuUI.js';
 
 export class GoodFPSController {
 
@@ -23,7 +25,7 @@ export class GoodFPSController {
     this.gravityAcceleration = 9.8;
 
     // movement parameters
-    this.moveSpeed = 8; 
+    this.moveSpeed = 8;
     this.airMoveSpeed = 5;
     this.jumpHeight = 5;
     this.jumpCooldown = 1200;
@@ -37,11 +39,11 @@ export class GoodFPSController {
     // gravity
     this.gravityVelocity = 0;
     this.grounded = false;
-    
+
     // shoot parameters
     this.shootCooldown = 400;
     this.lastShootTime = 0;
-    
+
     // input
     this.keysToTrack = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'Space'];
     this.initInputHandler();
@@ -57,6 +59,7 @@ export class GoodFPSController {
     this.gunPos = this.gunTransform.translation;
 
     this.health = 100;
+    this.killCount = 0;
   }
 
   initInputHandler() {
@@ -115,6 +118,13 @@ export class GoodFPSController {
 
   takeDamage(damage) {
     this.health -= damage;
+
+    let lifeCountText = document.getElementById("life-count")
+
+    if (lifeCountText) {
+      lifeCountText.textContent = this.health;
+    }
+
     console.log('health: ' + this.health);
 
     if (this.health <= 0) {
@@ -126,7 +136,7 @@ export class GoodFPSController {
   }
 
   updateRotation() {
-    if(!this.mouseMoving)
+    if (!this.mouseMoving)
       return;
 
     const min = -85;
@@ -135,10 +145,10 @@ export class GoodFPSController {
     const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
     this.angleX += this.dy;
     this.angleX = clamp(this.angleX, min, max);
-  
+
     // y axis
     quat.fromEuler(this.camera.rotation, -this.angleX, 0, 0);
-    
+
     // x axis
     let rot = quat.create();
     quat.fromEuler(rot, 0, -this.dx, 0);
@@ -148,20 +158,20 @@ export class GoodFPSController {
   updateMovement(dt) {
     let moveDir = vec4.fromValues(this.keysDictionary['KeyD'] - this.keysDictionary['KeyA'], 0, this.keysDictionary['KeyS'] - this.keysDictionary['KeyW'], 0);
 
-    if (vec4.len(moveDir) != 0)   
+    if (vec4.len(moveDir) != 0)
       vec4.normalize(moveDir, moveDir);
 
     let moveSpeed = this.isGrounded ? this.moveSpeed : this.airMoveSpeed;
     vec4.scale(moveDir, moveDir, moveSpeed * dt);
 
     mat4.mul(this.globalBodyMatrix, this.root.matrix, this.body.matrix);
-    
+
     let moveVector = vec4.create();
     vec4.transformMat4(moveVector, moveDir, this.globalBodyMatrix);
     moveVector = toVec3(moveVector);
     // apply movement
     vec3.add(this.root.translation, this.root.translation, moveVector);
-    
+
     // apply gravity
     let bodyDownDir = toVec3(vec4.transformMat4(vec4.create(), vec4.fromValues(0, -1, 0, 0), this.globalBodyMatrix));
     this.globalBodyPos = toVec3(vec4.transformMat4(vec4.create(), vec4.fromValues(0, 0, 0, 1), this.globalBodyMatrix));
@@ -170,10 +180,10 @@ export class GoodFPSController {
 
     let rotation = quat.rotationTo(quat.create(), bodyDownDir, gravityDir);
     quat.mul(this.root.rotation, rotation, this.root.rotation);
-    
+
     if (this.isGrounded && this.gravityVelocity <= 0) {
       this.gravityVelocity = 0;
-      
+
       if (this.keysDictionary['Space'] && Date.now() - this.lastJumpTime >= this.jumpCooldown) {
         this.lastJumpTime = Date.now();
         this.gravityVelocity = this.jumpHeight;
@@ -191,13 +201,13 @@ export class GoodFPSController {
     }
 
     this.isGrounded = false;
-    
+
     let gravityMove = vec3.scale(vec3.create(), gravityDir, -this.gravityVelocity * dt);
     vec3.add(this.root.translation, this.root.translation, gravityMove);
 
     let globalRot = quat.mul(quat.create(), this.root.rotation, this.body.rotation);
 
-    NetworkManager.instance().sendPlayerTransform(this.root.translation,  globalRot );
+    NetworkManager.instance().sendPlayerTransform(this.root.translation, globalRot);
   }
 
   async shoot() {
@@ -208,7 +218,7 @@ export class GoodFPSController {
       mat4.mul(globalCameraMatrix, this.globalBodyMatrix, this.camera.matrix);
       let cameraForward = toVec3(vec4.transformMat4(vec4.create(), vec4.fromValues(0, 0, -1, 0), globalCameraMatrix));
       let cameraPos = toVec3(vec4.transformMat4(vec4.create(), vec4.fromValues(0, 0, 0, 1), globalCameraMatrix));
-      
+
       let origin = vec3.add(vec3.create(), cameraPos, vec3.scale(vec3.create(), cameraForward, 1.5));
       const bullet = new Bullet(this.sceneNode, origin, cameraForward);
       await bullet.initialize();
@@ -216,6 +226,7 @@ export class GoodFPSController {
       let nmanager = NetworkManager.instance();
       nmanager.sendCreateBullet(origin, cameraForward);
       this.gunComponent.shoot();
+
     }
   }
 

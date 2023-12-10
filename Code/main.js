@@ -10,7 +10,10 @@ import {
   Transform,
 } from '../common/engine/core.js';
 import { NetworkManager } from './Network.js';
-import { UserInterface } from './UserInterface.js';
+import { UserInterface } from './UI/UserInterface.js';
+import { GameState } from './States/GameState.js';
+import { State } from './States/BaseState.js';
+import { MainMenuState } from './States/MainMenuState.js';
 
 // global variables
 export let debug_objects = [];
@@ -18,63 +21,44 @@ let oldTime = Date.now();
 
 const canvas = document.querySelector('canvas');
 
+
+document.addEventListener('DOMContentLoaded', (event) => {
+  const canvas = document.getElementById('canvas');
+
+  // Function to lock the pointer
+  function lockPointer() {
+    canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock;
+    canvas.requestPointerLock();
+  }
+
+  // Event listener for canvas click
+  canvas.addEventListener('click', () => {
+    // if (/* condition to check if pointer should be locked, e.g., not in game menu */) {
+    lockPointer();
+    // }
+  });
+
+  // Event listener for pointer lock change
+  document.addEventListener('pointerlockchange', lockPointerChange, false);
+  document.addEventListener('mozpointerlockchange', lockPointerChange, false);
+
+  function lockPointerChange() {
+    if (document.pointerLockElement === canvas || document.mozPointerLockElement === canvas) {
+      console.log('The pointer lock status is now locked');
+      // Add your logic for when the cursor is locked
+    } else {
+      console.log('The pointer lock status is now unlocked');
+      // Add your logic for when the cursor is unlocked
+    }
+  }
+});
+
+
+
 // play background mucic
 const backgroundMusic = document.getElementById('background-music');
 backgroundMusic.volume = 0.1;
 backgroundMusic.loop = true;
 backgroundMusic.play();
 
-let sceneNode = new Scene();
-await sceneNode.initialize();
-
-for (let i in debug_objects) {
-  sceneNode.scene.addChild(debug_objects[i]);
-}
-
-const renderer = new Renderer(canvas);
-await renderer.initialize();
-
-function update(time, dt) {
-  let static_colliders = []
-  let dynamic_colliders = []
-  sceneNode.scene.traverse(node => {
-    for (const component of node.components) {
-      component.update?.(time, dt);
-      if (component instanceof Collider) {
-        if (component.isStatic) {
-          static_colliders.push(node);
-        } else {
-          dynamic_colliders.push(node);
-        }
-      }
-    }
-  });
-
-  Collider.resolveCollisions(static_colliders, dynamic_colliders);
-  updateStats();
-  NetworkManager.instance();
-
-  //let UI = UserInterface.getInstance();
-}
-
-function updateStats() {
-  let now = Date.now();
-  let delta = now - oldTime;
-  let fps = (1000 / delta).toFixed(1);
-  oldTime = Date.now();
-
-  document.getElementById('stat-fps').innerHTML = fps;
-
-}
-
-function render() {
-  renderer.render(sceneNode.scene, sceneNode.camera);
-}
-
-function resize({ displaySize: { width, height } }) {
-  sceneNode.camera.getComponentOfType(Camera).aspect = width / height;
-  // UserInterface.getInstance().updatePos();
-}
-
-new ResizeSystem({ canvas, resize }).start();
-new UpdateSystem({ update, render }).start();
+State.setState(MainMenuState);
