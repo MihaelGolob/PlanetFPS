@@ -8,6 +8,8 @@ import { UserInterface } from '../../UI/UserInterface.js';
 import { MainMenuUI } from '../../UI/MainMenuUI.js';
 import { PlayerDeadUI } from '../../UI/PlayerDeadUI.js';
 
+export let hitParameter = 0;
+
 export class GoodFPSController {
 
   constructor(rootNode, root, body, camera, gun, sceneNode) {
@@ -61,6 +63,9 @@ export class GoodFPSController {
 
     this.health = 100;
     this.killCount = 0;
+
+    this.hitAnimationSpeed = 6;
+    this.hitAnimationStrength = 0.7;
   }
 
   initInputHandler() {
@@ -119,6 +124,7 @@ export class GoodFPSController {
 
   takeDamage(damage) {
     this.health -= damage;
+    hitParameter = this.hitAnimationStrength;
 
     let lifeCountText = document.getElementById("life-count")
 
@@ -238,6 +244,7 @@ export class GoodFPSController {
     this.updateRotation();
     this.updateMovement(dt);
     this.shoot();
+    hitParameter = Math.max(hitParameter - this.hitAnimationSpeed * dt, 0);
     this.mouseMoving = false;
   }
 }
