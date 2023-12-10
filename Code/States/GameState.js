@@ -19,12 +19,12 @@ export class GameState extends State {
   constructor() {
     super();
 
-    const nameElement = document.getElementById("enter-name")
-    this.name = nameElement.textContent;
-
-    const ipElement = document.getElementById("ip")
-    this.ip = ipElement.value;
-
+    // const nameElement = document.getElementById("enter-name")
+    // this.name = nameElement.textContent;
+    //
+    // const ipElement = document.getElementById("ip")
+    // this.ip = ipElement.value;
+    //
     this.oldTime = Date.now();
   }
 

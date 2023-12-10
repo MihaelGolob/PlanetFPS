@@ -1,49 +1,55 @@
 export class UpdateSystem {
 
-    constructor(application) {
-        this._update = this._update.bind(this);
-        this._render = this._render.bind(this);
+  constructor(application) {
+    this._update = this._update.bind(this);
+    this._render = this._render.bind(this);
 
-        this.application = application;
-        this.running = false;
+    this.application = application;
+    this.running = false;
+  }
+
+  start() {
+    if (this.running) {
+      return;
     }
+    this.running = true;
 
-    start() {
-        if (this.running) {
-            return;
-        }
+    this.application.start?.();
 
-        this.application.start?.();
+    this._time = performance.now() / 1000;
 
-        this._time = performance.now() / 1000;
+    this._updateFrame = setInterval(this._update, 0);
+    this._renderFrame = requestAnimationFrame(this._render);
+  }
 
-        this._updateFrame = setInterval(this._update, 0);
-        this._renderFrame = requestAnimationFrame(this._render);
+  stop() {
+    if (!this.running) {
+      return;
     }
+    this.running = false;
 
-    stop() {
-        if (!this.running) {
-            return;
-        }
+    this.application.stop?.();
 
-        this.application.stop?.();
+    clearInterval(this._updateFrame);
+    cancelAnimationFrame(this._render);
+  }
 
-        this._updateFrame = clearInterval(this._updateFrame);
-        this._renderFrame = cancelAnimationFrame(this._render);
+  _update() {
+    if (this.running) {
+      const time = performance.now() / 1000;
+      const dt = time - this._time;
+      this._time = time;
+
+      this.application.update?.(time, dt);
     }
+  }
 
-    _update() {
-        const time = performance.now() / 1000;
-        const dt = time - this._time;
-        this._time = time;
+  _render() {
+    if (this.running) {
+      this._renderFrame = requestAnimationFrame(this._render);
 
-        this.application.update?.(time, dt);
+      this.application.render?.();
     }
-
-    _render() {
-        this._renderFrame = requestAnimationFrame(this._render);
-
-        this.application.render?.();
-    }
+  }
 
 }
