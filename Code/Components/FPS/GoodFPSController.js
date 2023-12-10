@@ -131,11 +131,11 @@ export class GoodFPSController {
     });
   }
 
-  takeDamage(damage) {
+  takeDamage(damage, bulletOwnerId) {
     this.health -= damage;
     hitParameter = this.hitAnimationStrength;
 
-    let lifeCountText = document.getElementById("life-count")
+    let lifeCountText = document.getElementById("life-count");
 
     if (lifeCountText) {
       lifeCountText.textContent = this.health;
@@ -147,7 +147,7 @@ export class GoodFPSController {
       // todo: die go to menu
       this.sceneNode.removeChild(this.rootNode);
       console.log('you suck');
-      NetworkManager.instance().sendDestroyNetPlayer();
+      NetworkManager.instance().sendDestroyNetPlayer(bulletOwnerId);
 
       UserInterface.setInstance(PlayerDeadUI);
     }
@@ -244,6 +244,13 @@ export class GoodFPSController {
       let nmanager = NetworkManager.instance();
       nmanager.sendCreateBullet(origin, cameraForward);
       this.gunComponent.shoot();
+
+      let ammoCountElement = document.getElementById('ammo-count');
+
+      if (ammoCountElement) {
+        const curCount = ammoCountElement.textContent;
+        ammoCountElement.textContent = curCount - 1;
+      }
 
     }
   }

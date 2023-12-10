@@ -7,7 +7,7 @@ import { Collider } from '../Collider.js'
 import { Node } from '../../../common/engine/core/Node.js';
 
 export class Bullet {
-  constructor(parent, startPosition, direction) {
+  constructor(parent, startPosition, direction, ownerId = -1) {
     // bullet parameters
     this.speed = 50;
     this.damage = 15;
@@ -15,6 +15,7 @@ export class Bullet {
     this.parent = parent;
     this.startPosition = startPosition;
     this.direction = direction;
+    this.ownerId = ownerId;
   }
 
   async initialize() {
@@ -34,7 +35,7 @@ export class Bullet {
     this.bulletNode.addComponent(this.moveComponent);
 
     // collider
-    let colliderNode = new Node(420);
+    let colliderNode = new Node(420, this.ownerId);
     colliderNode.addComponent(new Transform());
     let collider = new Collider(this.bulletNode, 0.1, false, (hitNode) => {
       this.parent.removeChild(this.bulletNode);

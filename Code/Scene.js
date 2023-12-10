@@ -176,7 +176,7 @@ export class Scene {
       if (!checkIfBullet) return;
 
       let damage = Math.ceil(Math.random() * 5) + 10;
-      FPSRoot.getComponentOfType(GoodFPSController).takeDamage(damage);
+      FPSRoot.getComponentOfType(GoodFPSController).takeDamage(damage, otherNode.ownerId);
     });
     // await FPSCollider.initializeDebugDraw();
     FPSRoot.addChild(this.createColliderNode([0, 0.6, 0], FPSCollider, 1));

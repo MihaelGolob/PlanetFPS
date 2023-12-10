@@ -57,7 +57,7 @@ export class NetworkManager {
 
     switch (msg.msgFormat) {
       case Formats.FmtCreateBullet: {
-        let bullet = new Bullet(this.sceneNode, msg.data.origin, msg.data.direction);
+        let bullet = new Bullet(this.sceneNode, msg.data.origin, msg.data.direction, msg.sender_id);
         bullet.initialize();
         break;
       }
@@ -88,8 +88,16 @@ export class NetworkManager {
       }
       case Formats.FmtDestroyPlayer: {
         let player = NetworkPlayers[msg.sender_id];
+
         if (!player)
           break;
+
+        console.log(msg.data.killedBy)
+        if (msg.data.killedBy == this.id) {
+          let killCount = document.getElementById('kill-count');
+          let curKillCount = killCount.textContent;
+          killCount.textContent = curKillCount + 1;
+        }
 
         console.log('destroying player');
         this.sceneNode.removeChild(player.playerNode);
@@ -150,8 +158,8 @@ export class NetworkManager {
   sendCreateNetPlayer() {
     this.send(0, Formats.FmtCreatePlayer, null);
   }
-  sendDestroyNetPlayer() {
-    this.send(0, Formats.FmtDestroyPlayer, null);
+  sendDestroyNetPlayer(killer) {
+    this.send(0, Formats.FmtDestroyPlayer, { killedBy: killer });
   }
   sendPlayerTransform(globalPos, globalRot) {
     this.send(0, Formats.FmtSendPlayerTransform, {
