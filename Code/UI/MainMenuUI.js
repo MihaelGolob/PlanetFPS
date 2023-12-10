@@ -38,6 +38,12 @@ export class MainMenuUI extends UserInterface {
     this.createUIElement('../../Assets/ui_elements/Blue_button_3_big.png', 0.2, this.canvasWidth / 2, this.canvasHeight / 2 + 50, "ip", "", null, "127.0.0.1:8080", true);
     // play button
     this.createUIElement('../../Assets/ui_elements/Blue_button_3_big.png', 0.2, this.canvasWidth / 2, this.canvasHeight / 2 + 250, "", "Play", async () => {
+      // play background mucic
+      const backgroundMusic = document.getElementById('background-music');
+      backgroundMusic.volume = 0.1;
+      backgroundMusic.loop = true;
+      backgroundMusic.play();
+      
       await State.setState(GameState);
     }, "", true);
   }
