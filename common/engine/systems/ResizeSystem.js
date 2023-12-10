@@ -27,6 +27,9 @@ export class ResizeSystem {
             width: null,
             height: null,
         };
+
+        this.resizeInterval = 5000;
+        this.lastResize = 0;
     }
 
     start() {
@@ -47,6 +50,12 @@ export class ResizeSystem {
 
     _resize() {
         this._resizeFrame = requestAnimationFrame(this._resize);
+        const time = performance.now();
+        const dt = time - this.lastResize;
+        if (dt < this.resizeInterval) {
+            return;
+        }
+        this.lastResize = time;
 
         const displayRect = this.canvas.getBoundingClientRect();
         if (displayRect.width === this.lastSize.width && displayRect.height === this.lastSize.height) {
