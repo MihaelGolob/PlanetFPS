@@ -1,17 +1,3 @@
-import { ResizeSystem } from '../common/engine/systems/ResizeSystem.js';
-import { UpdateSystem } from '../common/engine/systems/UpdateSystem.js';
-import { Renderer } from './Renderer.js';
-import { Scene } from './Scene.js';
-import { Collider } from './Components/Collider.js';
-import {
-  Camera,
-  Model,
-  Node,
-  Transform,
-} from '../common/engine/core.js';
-import { NetworkManager } from './Network.js';
-import { UserInterface } from './UI/UserInterface.js';
-import { GameState } from './States/GameState.js';
 import { State } from './States/BaseState.js';
 import { MainMenuState } from './States/MainMenuState.js';
 
